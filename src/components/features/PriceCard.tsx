@@ -10,265 +10,124 @@ interface PriceCardProps {
 export function PriceCard({ symbol, price, change }: PriceCardProps) {
   const isPositive = change.startsWith('+');
   const isNegative = change.startsWith('-');
-  const isNeutral = !isPositive && !isNegative;
   
-  // 한국어 코인 이름 가져오기
-  const koreanName = getKoreanCoinName(symbol);
-  // 심볼에서 코인 이름 추출 (예: BTCUSDT -> BTC)
-  const coinName = symbol.replace('USDT', '').replace('BTC', '').replace('ETH', '');
-  
-  // 가격 포맷팅 함수
-  const formatPrice = (priceStr: string) => {
-    const priceNum = parseFloat(priceStr);
-    if (isNaN(priceNum)) return priceStr;
+  const getCoinIcon = (symbol: string) => {
+    const coin = symbol.replace('USDT', '');
+    switch (coin) {
+      case 'BTC':
+        return '₿';
+      case 'ETH':
+        return 'Ξ';
+      case 'BNB':
+        return 'B';
+      case 'ADA':
+        return 'A';
+      case 'SOL':
+        return '◎';
+      case 'SHIB':
+        return '🐕';
+      case 'DOT':
+        return '●';
+      case 'LINK':
+        return '🔗';
+      case 'UNI':
+        return '🦄';
+      case 'MATIC':
+        return 'M';
+      default:
+        return coin.slice(0, 1);
+    }
+  };
+
+  const getCoinName = (symbol: string) => {
+    const coin = symbol.replace('USDT', '');
+    switch (coin) {
+      case 'BTC':
+        return 'Bitcoin';
+      case 'ETH':
+        return 'Ethereum';
+      case 'BNB':
+        return 'Binance Coin';
+      case 'ADA':
+        return 'Cardano';
+      case 'SOL':
+        return 'Solana';
+      case 'SHIB':
+        return 'Shiba Inu';
+      case 'DOT':
+        return 'Polkadot';
+      case 'LINK':
+        return 'Chainlink';
+      case 'UNI':
+        return 'Uniswap';
+      case 'MATIC':
+        return 'Polygon';
+      default:
+        return coin;
+    }
+  };
+
+  const formatPrice = (price: string) => {
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice)) return '로딩 중...';
     
-    // 1달러 미만인 경우 소수점 8자리까지 표시 (시바이누 등)
-    if (priceNum < 1) {
-      return priceNum.toFixed(8).replace(/\.?0+$/, '');
-    }
-    // 1달러 이상 1000달러 미만인 경우 소수점 2자리까지 표시
-    else if (priceNum < 1000) {
-      return priceNum.toFixed(2);
-    }
-    // 1000달러 이상인 경우 천 단위 구분자와 소수점 2자리까지 표시
-    else {
-      return priceNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-  };
-
-  // 변동률 색상 및 스타일 결정
-  const getChangeStyles = () => {
-    if (isPositive) {
-      return {
-        color: 'var(--success-600)',
-        background: 'var(--success-50)',
-        borderColor: 'var(--success-500)',
-        icon: '↗',
-        label: '상승'
-      };
-    } else if (isNegative) {
-      return {
-        color: 'var(--error-600)',
-        background: 'var(--error-50)',
-        borderColor: 'var(--error-500)',
-        icon: '↘',
-        label: '하락'
-      };
+    if (numPrice >= 1000) {
+      return `$${numPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    } else if (numPrice >= 1) {
+      return `$${numPrice.toFixed(2)}`;
     } else {
-      return {
-        color: 'var(--gray-600)',
-        background: 'var(--gray-100)',
-        borderColor: 'var(--gray-400)',
-        icon: '→',
-        label: '변동없음'
-      };
+      return `$${numPrice.toFixed(4)}`;
     }
   };
 
-  const changeStyles = getChangeStyles();
-  
   return (
-    <div 
-      className="card fade-in-up" 
-      style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid var(--gray-200)',
-        borderRadius: 'var(--radius-2xl)',
-        padding: 'var(--space-6)',
-        transition: 'all var(--transition-normal)',
-        cursor: 'pointer',
-        position: 'relative',
-        overflow: 'hidden',
-        minHeight: '180px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = 'var(--shadow-xl)';
-        e.currentTarget.style.borderColor = 'var(--primary-300)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-        e.currentTarget.style.borderColor = 'var(--gray-200)';
-      }}
-      onFocus={(e) => {
-        e.currentTarget.style.outline = '2px solid var(--primary-500)';
-        e.currentTarget.style.outlineOffset = '2px';
-      }}
-      onBlur={(e) => {
-        e.currentTarget.style.outline = 'none';
-      }}
-      tabIndex={0}
-      role="button"
-      aria-label={`${koreanName} 가격 정보: ${formatPrice(price)} 달러, ${change}`}
-    >
-      {/* 상단 그라데이션 바 */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '4px',
-        background: 'linear-gradient(90deg, var(--primary-500), var(--primary-600))',
-        borderRadius: 'var(--radius-2xl) var(--radius-2xl) 0 0'
-      }} />
-      
-      <div style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* 코인 정보 */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'flex-start', 
-          gap: 'var(--space-4)',
-          marginBottom: 'var(--space-5)',
-          flexShrink: 0
-        }}>
-          <div style={{
-            width: '56px',
-            height: '56px',
-            background: 'linear-gradient(135deg, var(--primary-500), var(--primary-600))',
-            borderRadius: 'var(--radius-xl)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 'var(--font-size-2xl)',
-            color: 'white',
-            fontWeight: '800',
-            boxShadow: 'var(--shadow-md)',
-            flexShrink: 0,
-            position: 'relative'
-          }}>
-            {coinName.charAt(0)}
-            {/* 코인 아이콘 배경 효과 */}
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '100%',
-              height: '100%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
-              borderRadius: 'inherit'
-            }} />
+    <div className="group">
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+              {getCoinIcon(symbol)}
+            </div>
+            <div>
+              <h3 className="text-white font-semibold text-lg">{getCoinName(symbol)}</h3>
+              <p className="text-gray-400 text-sm">{symbol}</p>
+            </div>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h3 style={{ 
-              margin: 0, 
-              fontSize: 'var(--font-size-xl)', 
-              fontWeight: '700', 
-              color: 'var(--gray-900)',
-              marginBottom: 'var(--space-1)',
-              lineHeight: '1.3',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap'
-            }}>
-              {koreanName}
-            </h3>
-            <p style={{ 
-              margin: 0, 
-              fontSize: 'var(--font-size-sm)', 
-              color: 'var(--gray-500)',
-              fontWeight: '500',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap'
-            }}>
-              {symbol}
-            </p>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-white mb-1">
+              {formatPrice(price)}
+            </div>
+            <div className={`text-sm font-medium px-2 py-1 rounded-full ${
+              isPositive 
+                ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                : isNegative 
+                ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+            }`}>
+              {isPositive ? '↗' : isNegative ? '↘' : '→'} {change}
+            </div>
           </div>
         </div>
         
-        {/* 가격 정보 */}
-        <div style={{ 
-          marginBottom: 'var(--space-5)',
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center'
-        }}>
-          <div style={{ width: '100%' }}>
-            <p style={{ 
-              margin: 0, 
-              fontSize: 'var(--font-size-3xl)', 
-              fontWeight: '800', 
-              color: 'var(--gray-900)',
-              lineHeight: '1.2',
-              fontFamily: 'Pretendard, sans-serif',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              marginBottom: 'var(--space-1)'
-            }}>
-              ${formatPrice(price)}
-            </p>
-            <p style={{
-              margin: 0,
-              fontSize: 'var(--font-size-xs)',
-              color: 'var(--gray-500)',
-              fontWeight: '500'
-            }}>
-              미국 달러
-            </p>
+        {/* 미니 차트 영역 */}
+        <div className="h-20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 flex items-center justify-center">
+          <div className="flex items-center space-x-1">
+            <div className="w-1 h-8 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
+            <div className="w-1 h-12 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
+            <div className="w-1 h-6 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
+            <div className="w-1 h-10 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
+            <div className="w-1 h-8 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
+            <div className="w-1 h-14 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
+            <div className="w-1 h-9 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
           </div>
         </div>
         
-        {/* 변동률 */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'var(--space-2)',
-          flexShrink: 0
-        }}>
-          <span style={{
-            fontSize: 'var(--font-size-sm)',
-            fontWeight: '600',
-            color: changeStyles.color,
-            padding: 'var(--space-2) var(--space-4)',
-            background: changeStyles.background,
-            borderRadius: 'var(--radius-lg)',
-            border: `2px solid ${changeStyles.borderColor}`,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-2)',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            minHeight: '40px',
-            position: 'relative'
-          }}>
-            <span style={{ 
-              fontSize: 'var(--font-size-lg)', 
-              flexShrink: 0,
-              fontWeight: 'bold'
-            }}>
-              {changeStyles.icon}
-            </span>
-            <span style={{ 
-              overflow: 'hidden', 
-              textOverflow: 'ellipsis',
-              fontWeight: '600'
-            }}>
-              {change}
-            </span>
-            <span style={{
-              fontSize: 'var(--font-size-xs)',
-              opacity: 0.8,
-              marginLeft: 'auto',
-              flexShrink: 0
-            }}>
-              {changeStyles.label}
-            </span>
-          </span>
+        {/* 추가 정보 */}
+        <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
+          <span>24h Volume</span>
+          <span className="text-purple-300">$1.2B</span>
         </div>
       </div>
-
-      {/* 접근성을 위한 스크린 리더 전용 텍스트 */}
-      <span style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
-        {koreanName} 현재 가격 {formatPrice(price)} 달러, {change} 변동
-      </span>
     </div>
   );
 }
