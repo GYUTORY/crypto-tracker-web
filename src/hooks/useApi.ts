@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { priceApi, aiApi, predictionApi, symbolsApi, streamApi, tcpApi } from '../services/api';
+import { priceApi, aiApi, predictionApi, symbolsApi, streamApi, tcpApi, newsApi, marketApi } from '../services/api';
 import type { 
   ApiResponse, 
   PriceData, 
@@ -7,7 +7,12 @@ import type {
   PricePrediction, 
   TradingSymbols, 
   StreamStatus, 
-  TcpStatus
+  TcpStatus,
+  NewsItem,
+  NewsResponse,
+  NewsPaginationResponse,
+  ChartData,
+  MarketStats
 } from '../types/api';
 
 // 가격 관련 훅
@@ -34,6 +39,31 @@ export function usePrices(symbols: string[]) {
     },
     enabled: symbols.length > 0,
     refetchInterval: 30000,
+  });
+}
+
+// 차트 데이터 훅
+export function useChartData(symbol: string, timeframe: string = '1h', limit: number = 24) {
+  return useQuery({
+    queryKey: ['chart-data', symbol, timeframe, limit],
+    queryFn: async () => {
+      const response: any = await priceApi.getChartData(symbol, timeframe, limit);
+      return response.result_data;
+    },
+    enabled: !!symbol,
+    refetchInterval: 60000, // 1분마다 갱신
+  });
+}
+
+// 시장 통계 훅
+export function useMarketStats() {
+  return useQuery({
+    queryKey: ['market-stats'],
+    queryFn: async () => {
+      const response: any = await marketApi.getMarketStats();
+      return response.result_data;
+    },
+    refetchInterval: 300000, // 5분마다 갱신
   });
 }
 
@@ -176,3 +206,41 @@ export function useTcpReconnect() {
     },
   });
 }
+
+// 뉴스 관련 훅들
+export const useBitcoinNews = () => {
+  return useQuery({
+    queryKey: ['bitcoin-news'],
+    queryFn: async () => {
+      const response: any = await newsApi.getBitcoinNews();
+      return response.result_data;
+    },
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
+};
+
+export const useAllNews = (params?: { limit?: number; page?: number; source?: string }) => {
+  return useQuery({
+    queryKey: ['all-news', params],
+    queryFn: async () => {
+      const response: any = await newsApi.getAllNews(params);
+      return response.result_data;
+    },
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
+};
+
+export const useNewsSearch = (params: { q: string; limit?: number; page?: number }) => {
+  return useQuery({
+    queryKey: ['news-search', params],
+    queryFn: async () => {
+      const response: any = await newsApi.searchNews(params);
+      return response.result_data;
+    },
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+    enabled: !!params.q, // 검색어가 있을 때만 실행
+  });
+};
