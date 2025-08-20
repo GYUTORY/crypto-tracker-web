@@ -65,6 +65,18 @@ export const priceApi = {
       symbols.map(symbol => api.get(`/price/${symbol}`))
     );
   },
+
+  // 차트 데이터 조회
+  getChartData: (symbol: string, timeframe: string = '1h', limit: number = 24) => {
+    return api.get(`/price/${symbol}/chart?timeframe=${timeframe}&limit=${limit}`);
+  },
+};
+
+export const marketApi = {
+  // 시장 통계 조회
+  getMarketStats: () => {
+    return api.get('/market/stats');
+  },
 };
 
 export const aiApi = {
@@ -167,5 +179,33 @@ export const symbolsApi = {
   // USDT 페어 코인 목록 조회
   getUsdtSymbols: () => {
     return api.get('/symbols/usdt');
+  },
+};
+
+export const newsApi = {
+  // 비트코인 뉴스 조회
+  getBitcoinNews: () => {
+    return api.get('/news/bitcoin');
+  },
+  
+  // 전체 뉴스 조회
+  getAllNews: (params?: { limit?: number; page?: number; source?: string }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.source) queryParams.append('source', params.source);
+    
+    const queryString = queryParams.toString();
+    return api.get(`/news${queryString ? `?${queryString}` : ''}`);
+  },
+  
+  // 뉴스 검색
+  searchNews: (params: { q: string; limit?: number; page?: number }) => {
+    const queryParams = new URLSearchParams();
+    queryParams.append('q', params.q);
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.page) queryParams.append('page', params.page.toString());
+    
+    return api.get(`/news/search?${queryParams.toString()}`);
   },
 };
