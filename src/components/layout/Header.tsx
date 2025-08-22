@@ -1,199 +1,132 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+
+const navItems = [
+  { path: '/', label: '대시보드', icon: '🏠' },
+  { path: '/prices', label: '가격 조회', icon: '💰' },
+  { path: '/analysis', label: 'AI 분석', icon: '🤖' },
+  { path: '/prediction', label: '예측', icon: '🔮' },
+  { path: '/symbols', label: '코인 목록', icon: '📋' },
+  { path: '/news', label: '뉴스', icon: '📰' }
+];
 
 export function Header() {
   const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const navItems = [
-    { path: '/', label: '대시보드' },
-    { path: '/prices', label: '가격 조회' },
-    { path: '/analysis', label: 'AI 분석' },
-    { path: '/prediction', label: '예측' },
-    { path: '/symbols', label: '코인 목록' }
-  ];
 
   return (
     <header style={{
-      background: 'rgba(255, 255, 255, 0.1)',
-      backdropFilter: 'blur(20px)',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-      padding: '1rem 2rem',
       position: 'sticky',
       top: 0,
-      zIndex: 100,
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+      zIndex: 50,
+      background: 'rgba(255, 255, 255, 0.1)',
+      backdropFilter: 'blur(20px)',
+      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+      padding: '1rem 0'
     }}>
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        maxWidth: '1200px',
-        margin: '0 auto'
-      }}>
-        {/* 로고 */}
-        <Link 
-          to="/" 
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.8rem',
-            textDecoration: 'none',
-            fontSize: '1.8rem',
-            fontWeight: '800',
-            color: 'white',
-            background: 'linear-gradient(135deg, #fff 0%, #e0e7ff 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)';
-            e.currentTarget.style.textShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.textShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-          }}
-        >
-          <div style={{
-            width: '40px',
-            height: '40px',
-            background: 'linear-gradient(135deg, #f7931a, #ffd700)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            color: 'white',
-            boxShadow: '0 4px 12px rgba(247, 147, 26, 0.4)'
-          }}>
-            ₿
-          </div>
-          <span>Crypto Tracker Pro</span>
-        </Link>
-        
-        {/* 데스크톱 네비게이션 */}
-        <ul className="nav-links">
-          {navItems.map((item) => (
-            <li key={item.path}>
-              <Link 
-                to={item.path} 
-                style={{
-                  color: location.pathname === item.path ? 'white' : 'rgba(255, 255, 255, 0.8)',
-                  textDecoration: 'none',
-                  fontWeight: '500',
-                  padding: '0.75rem 1.25rem',
-                  borderRadius: '0.75rem',
-                  transition: 'all 0.3s ease',
-                  background: location.pathname === item.path ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-                  boxShadow: location.pathname === item.path ? '0 4px 12px rgba(0, 0, 0, 0.2)' : 'none',
-                  fontSize: '0.95rem',
-                  whiteSpace: 'nowrap'
-                }}
-                onMouseEnter={(e) => {
-                  if (location.pathname !== item.path) {
-                    e.currentTarget.style.color = 'white';
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (location.pathname !== item.path) {
-                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }
-                }}
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '4rem' }}>
+          {/* 로고 */}
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', color: 'white' }}>
+            <div style={{
+              width: '2.5rem',
+              height: '2.5rem',
+              background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+              borderRadius: '0.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)'
+            }}>
+              <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>₿</span>
+            </div>
+            <div style={{ display: 'block' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', background: 'linear-gradient(135deg, #ffffff, #e0e7ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
+                Crypto Tracker Pro
+              </h1>
+              <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0 }}>실시간 암호화폐 트래커</p>
+            </div>
+          </Link>
 
-        {/* 모바일 메뉴 버튼 */}
-        <button
-          onClick={toggleMobileMenu}
-          className="mobile-menu-btn"
-          style={{
-            display: 'none',
-            background: 'none',
-            border: 'none',
-            color: 'white',
-            fontSize: '1.5rem',
-            cursor: 'pointer',
-            padding: '0.5rem',
-            borderRadius: '0.5rem',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
-          }}
-        >
-          ☰
-        </button>
-      </nav>
-
-      {/* 모바일 메뉴 */}
-      {isMobileMenuOpen && (
-        <div className="mobile-menu">
-          <ul style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            listStyle: 'none',
-            margin: 0,
-            padding: 0
-          }}>
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <Link 
-                  to={item.path} 
-                  onClick={() => setIsMobileMenuOpen(false)}
+          {/* 네비게이션 */}
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
                   style={{
-                    color: location.pathname === item.path ? 'white' : 'rgba(255, 255, 255, 0.8)',
-                    textDecoration: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '0.75rem',
                     fontWeight: '500',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '0.5rem',
-                    transition: 'all 0.3s ease',
-                    background: location.pathname === item.path ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-                    display: 'block',
-                    fontSize: '1rem'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (location.pathname !== item.path) {
-                      e.currentTarget.style.color = 'white';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (location.pathname !== item.path) {
-                      e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
-                      e.currentTarget.style.background = 'transparent';
-                    }
+                    fontSize: '0.875rem',
+                    transition: 'all 0.3s',
+                    textDecoration: 'none',
+                    color: isActive ? 'white' : '#d1d5db',
+                    background: isActive ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2))' : 'transparent',
+                    border: isActive ? '1px solid rgba(139, 92, 246, 0.3)' : 'none'
                   }}
                 >
-                  {item.label}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.125rem' }}>{item.icon}</span>
+                    <span>{item.label}</span>
+                  </div>
                 </Link>
-              </li>
-            ))}
-          </ul>
+              );
+            })}
+          </nav>
+
+          {/* 모바일 메뉴 버튼 */}
+          <div style={{ display: 'none' }}>
+            <button style={{
+              padding: '0.5rem',
+              borderRadius: '0.75rem',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              cursor: 'pointer'
+            }}>
+              <svg style={{ width: '1.5rem', height: '1.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+
+          {/* 우측 액션 버튼 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 0.75rem',
+              background: 'rgba(34, 197, 94, 0.1)',
+              border: '1px solid rgba(34, 197, 94, 0.2)',
+              borderRadius: '0.75rem'
+            }}>
+              <div style={{
+                width: '0.5rem',
+                height: '0.5rem',
+                background: '#22c55e',
+                borderRadius: '50%',
+                animation: 'pulse 2s infinite'
+              }}></div>
+              <span style={{ color: '#22c55e', fontSize: '0.875rem', fontWeight: '500' }}>실시간</span>
+            </div>
+            
+            <button style={{
+              padding: '0.5rem 1rem',
+              background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+              color: 'white',
+              borderRadius: '0.75rem',
+              fontWeight: '500',
+              fontSize: '0.875rem',
+              border: 'none',
+              cursor: 'pointer'
+            }}>
+              시작하기
+            </button>
+          </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }

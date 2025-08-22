@@ -7,21 +7,22 @@ import { Prices } from './pages/Prices';
 import { Analysis } from './pages/Analysis';
 import { Prediction } from './pages/Prediction';
 import { Symbols } from './pages/Symbols';
+import { News } from './pages/News';
 import './index.css';
 
 // React Query 클라이언트 설정
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 3, // 재시도 횟수 증가
-      retryDelay: 2000, // 재시도 간격 증가
-      staleTime: 5 * 60 * 1000, // 5분
-      gcTime: 10 * 60 * 1000, // 10분
-      refetchOnWindowFocus: false, // 윈도우 포커스 시 재요청 비활성화
+      retry: 3,
+      retryDelay: 2000,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
     },
     mutations: {
-      retry: 2, // 뮤테이션 재시도 횟수
-      retryDelay: 3000, // 뮤테이션 재시도 간격
+      retry: 2,
+      retryDelay: 3000,
     },
   },
 });
@@ -30,7 +31,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="App">
+        <div style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
+          color: 'white',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}>
           <Header />
           <main>
             <Routes>
@@ -39,6 +45,7 @@ function App() {
               <Route path="/analysis" element={<Analysis />} />
               <Route path="/prediction" element={<Prediction />} />
               <Route path="/symbols" element={<Symbols />} />
+              <Route path="/news" element={<News />} />
             </Routes>
           </main>
           <Toaster 
