@@ -6,7 +6,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Prices } from './pages/Prices';
 import { Analysis } from './pages/Analysis';
 import { Prediction } from './pages/Prediction';
-import { Symbols } from './pages/Symbols';
+
 import { News } from './pages/News';
 import './index.css';
 
@@ -44,7 +44,7 @@ function App() {
               <Route path="/prices" element={<Prices />} />
               <Route path="/analysis" element={<Analysis />} />
               <Route path="/prediction" element={<Prediction />} />
-              <Route path="/symbols" element={<Symbols />} />
+
               <Route path="/news" element={<News />} />
             </Routes>
           </main>

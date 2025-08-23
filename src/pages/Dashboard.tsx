@@ -826,22 +826,7 @@ export function Dashboard() {
           >
             📈 가격 예측
           </button>
-          <button 
-              onClick={() => navigate('/symbols')}
-            style={{ 
-                padding: '1.25rem 2.5rem',
-                background: 'linear-gradient(135deg, #f97316, #ef4444)',
-                color: 'white',
-                borderRadius: '1.5rem',
-                fontWeight: 'bold',
-                fontSize: '1.25rem',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-            }}
-          >
-            📋 코인 목록
-          </button>
+
           </div>
         </div>
       </div>

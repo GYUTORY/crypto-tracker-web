@@ -5,7 +5,6 @@ const navItems = [
   { path: '/prices', label: '가격 조회', icon: '💰' },
   { path: '/analysis', label: 'AI 분석', icon: '🤖' },
   { path: '/prediction', label: '예측', icon: '🔮' },
-  { path: '/symbols', label: '코인 목록', icon: '📋' },
   { path: '/news', label: '뉴스', icon: '📰' }
 ];
 
