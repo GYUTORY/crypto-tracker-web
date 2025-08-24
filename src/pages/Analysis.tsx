@@ -62,12 +62,12 @@ export function Analysis() {
 
   // 신호 색상 결정
   const getSignalColor = (signal: string) => {
-    if (!signal) return '#6b7280';
+    if (!signal) return 'var(--text-muted)';
     const lowerSignal = signal.toLowerCase();
-    if (lowerSignal.includes('매수') || lowerSignal.includes('강세') || lowerSignal.includes('buy')) return '#10b981';
-    if (lowerSignal.includes('매도') || lowerSignal.includes('약세') || lowerSignal.includes('sell')) return '#ef4444';
-    if (lowerSignal.includes('중립') || lowerSignal.includes('neutral')) return '#f59e0b';
-    return '#6b7280';
+    if (lowerSignal.includes('매수') || lowerSignal.includes('강세') || lowerSignal.includes('buy')) return 'var(--status-success)';
+    if (lowerSignal.includes('매도') || lowerSignal.includes('약세') || lowerSignal.includes('sell')) return 'var(--status-error)';
+    if (lowerSignal.includes('중립') || lowerSignal.includes('neutral')) return 'var(--status-warning)';
+    return 'var(--text-muted)';
   };
 
   return (
@@ -96,16 +96,16 @@ export function Analysis() {
             <div style={{
               width: '0.5rem',
               height: '0.5rem',
-              background: '#22c55e',
+                              background: 'var(--status-success)',
               borderRadius: '50%',
               animation: 'pulse 2s infinite'
             }}></div>
-            <span style={{ color: '#22c55e', fontSize: '0.875rem', fontWeight: '500' }}>AI 분석 시스템 활성화</span>
+            <span style={{ color: 'var(--status-success)', fontSize: '0.875rem', fontWeight: '500' }}>AI 분석 시스템 활성화</span>
           </div>
           <h1 style={{
             fontSize: '4rem',
             fontWeight: '900',
-            background: 'linear-gradient(135deg, #ffffff, #e0e7ff)',
+            background: 'var(--gradient-text)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             marginBottom: '1.5rem',
@@ -115,12 +115,12 @@ export function Analysis() {
           </h1>
           <p style={{ 
             fontSize: '1.25rem',
-            color: '#d1d5db',
+            color: 'var(--text-tertiary)',
             maxWidth: '48rem',
             margin: '0 auto',
             lineHeight: '1.6'
           }}>
-            최첨단 AI가 제공하는 실시간 암호화폐 기술적 분석으로 <span style={{ color: '#a78bfa', fontWeight: '600' }}>스마트한 투자 결정</span>을 도와드립니다
+            최첨단 AI가 제공하는 실시간 암호화폐 기술적 분석으로 <span style={{ color: 'var(--text-accent)', fontWeight: '600' }}>스마트한 투자 결정</span>을 도와드립니다
           </p>
         </div>
 
@@ -130,7 +130,7 @@ export function Analysis() {
             <div style={{
               width: '3rem',
               height: '3rem',
-              background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+              background: 'var(--gradient-purple)',
               borderRadius: '1rem',
               display: 'flex',
               alignItems: 'center',
@@ -140,8 +140,8 @@ export function Analysis() {
               <span style={{ fontSize: '1.5rem' }}>🤖</span>
             </div>
             <div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white', margin: 0 }}>코인 선택 및 분석</h2>
-              <p style={{ color: '#9ca3af', margin: 0 }}>분석하고 싶은 암호화폐를 선택하세요</p>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>코인 선택 및 분석</h2>
+              <p style={{ color: 'var(--text-tertiary)', margin: 0 }}>기술적 분석 및 매매 신호</p>
             </div>
           </div>
 
@@ -170,7 +170,7 @@ export function Analysis() {
                     backdropFilter: 'blur(10px)',
                     transition: 'all 0.3s ease',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                    color: searchTerm ? '#1f2937' : '#9ca3af',
+                    color: searchTerm ? 'var(--text-primary)' : 'var(--text-tertiary)',
                     cursor: 'pointer',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -213,7 +213,7 @@ export function Analysis() {
                       <div style={{ 
                         fontSize: '0.9rem', 
                         fontWeight: '600', 
-                        color: '#8b5cf6',
+                        color: 'var(--text-primary)',
                         marginBottom: '0.5rem'
                       }}>
                         🔥 인기 코인
@@ -233,7 +233,7 @@ export function Analysis() {
                               border: '1px solid rgba(139, 92, 246, 0.2)',
                               borderRadius: '0.5rem',
                               fontSize: '0.85rem',
-                              color: '#8b5cf6',
+                              color: 'var(--text-primary)',
                               cursor: 'pointer',
                               transition: 'all 0.2s ease',
                               fontWeight: '500'
@@ -263,7 +263,7 @@ export function Analysis() {
                           <div style={{
                             width: '24px',
                             height: '24px',
-                            background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                            background: 'var(--gradient-purple)',
                             borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
@@ -276,7 +276,7 @@ export function Analysis() {
                           </div>
                           <span style={{ 
                             fontSize: '0.95rem', 
-                            color: '#374151',
+                            color: 'var(--text-secondary)',
                             fontWeight: '500'
                           }}>
                             {getKoreanCoinName(symbol)} ({symbol})
@@ -293,7 +293,7 @@ export function Analysis() {
                 disabled={isLoading}
                 style={{ 
                   padding: '1rem 2rem',
-                  background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                  background: 'var(--gradient-purple)',
                   color: 'white',
                   borderRadius: '1rem',
                   fontWeight: 'bold',
@@ -347,7 +347,7 @@ export function Analysis() {
                     width: '60px',
                     height: '60px',
                     border: '4px solid rgba(139, 92, 246, 0.3)',
-                    borderTop: '4px solid #8b5cf6',
+                    borderTop: '4px solid var(--text-accent)',
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite',
                     margin: '0 auto 2rem'
@@ -355,7 +355,7 @@ export function Analysis() {
                   <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
                     AI 분석 중...
                   </h3>
-                  <p style={{ color: '#9ca3af', fontSize: '1.125rem' }}>
+                  <p style={{ color: 'var(--text-tertiary)', fontSize: '1.125rem' }}>
                     최첨단 AI가 {symbol}의 기술적 지표를 분석하고 있습니다
                   </p>
                 </div>
@@ -382,10 +382,10 @@ export function Analysis() {
                   }}>
                     <span style={{ fontSize: '2rem' }}>❌</span>
                   </div>
-                  <h3 style={{ color: '#ef4444', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                  <h3 style={{ color: 'var(--status-error)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
                     분석 오류
                   </h3>
-                  <p style={{ color: '#fca5a5', fontSize: '1.125rem' }}>
+                  <p style={{ color: 'var(--status-error-light)', fontSize: '1.125rem' }}>
                     코인 심볼을 확인하거나 잠시 후 다시 시도해주세요
                   </p>
                 </div>
@@ -406,7 +406,7 @@ export function Analysis() {
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'linear-gradient(135deg, #10b981, #14b8a6)',
+                        background: 'var(--gradient-success)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -419,10 +419,10 @@ export function Analysis() {
                       <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
                         {symbol} 현재 가격
                       </h3>
-                      <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#10b981', marginBottom: '0.75rem' }}>
+                      <div style={{ fontSize: '2.5rem', fontWeight: '900', color: 'var(--status-success)', marginBottom: '0.75rem' }}>
                         ${price}
                       </div>
-                      <p style={{ color: '#9ca3af', fontSize: '1rem' }}>실시간 업데이트</p>
+                      <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>실시간 업데이트</p>
                     </div>
                   </div>
 
@@ -439,7 +439,7 @@ export function Analysis() {
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                        background: 'var(--gradient-secondary)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -460,7 +460,7 @@ export function Analysis() {
                       }}>
                         {analysis?.simpleAdvice || 'N/A'}
                       </div>
-                      <p style={{ color: '#9ca3af', fontSize: '1rem' }}>AI 분석 결과</p>
+                      <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>AI 분석 결과</p>
                     </div>
                   </div>
 
@@ -477,7 +477,7 @@ export function Analysis() {
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                        background: 'var(--gradient-purple)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -494,11 +494,11 @@ export function Analysis() {
                         fontSize: '2.5rem', 
                         fontWeight: '900', 
                         marginBottom: '0.75rem',
-                        color: analysis?.confidence >= 80 ? '#10b981' : analysis?.confidence >= 60 ? '#f59e0b' : '#ef4444'
+                        color: analysis?.confidence >= 80 ? 'var(--status-success)' : analysis?.confidence >= 60 ? 'var(--status-warning)' : 'var(--status-error)'
                       }}>
                         {analysis?.confidence || 'N/A'}%
                       </div>
-                      <p style={{ color: '#9ca3af', fontSize: '1rem' }}>분석 정확도</p>
+                      <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>분석 정확도</p>
                     </div>
                   </div>
                 </div>

@@ -1,0 +1,172 @@
+/* 테마별 CSS 변수 정의 */
+
+/* 다크 모드 (기본) */
+:root[data-theme="dark"] {
+  /* 배경 색상 */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e1b4b;
+  --bg-tertiary: #1e293b;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-hover: rgba(255, 255, 255, 0.1);
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* 텍스트 색상 */
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #1f2937;
+  
+  /* 테두리 색상 */
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.2);
+  --border-accent: rgba(59, 130, 246, 0.3);
+  --border-focus: #3b82f6;
+  
+  /* 그라데이션 */
+  --gradient-primary: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  --gradient-secondary: linear-gradient(135deg, #3b82f6, #6366f1);
+  --gradient-accent: linear-gradient(135deg, #f97316, #ef4444);
+  --gradient-success: linear-gradient(135deg, #10b981, #14b8a6);
+  --gradient-purple: linear-gradient(135deg, #8b5cf6, #ec4899);
+  --gradient-text: linear-gradient(135deg, #ffffff, #e0e7ff);
+  
+  /* 그림자 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.3);
+  
+  /* 상태 색상 */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* 소스별 색상 */
+  --source-coindesk: #3b82f6;
+  --source-cointelegraph: #8b5cf6;
+  --source-bitcoin: #f97316;
+  --source-decrypt: #10b981;
+  --source-block: #ef4444;
+  
+  /* 스크롤바 */
+  --scrollbar-track: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb: linear-gradient(135deg, #8b5cf6, #ec4899);
+  --scrollbar-thumb-hover: linear-gradient(135deg, #7c3aed, #db2777);
+}
+
+/* 라이트 모드 */
+:root[data-theme="light"] {
+  /* 배경 색상 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f0f4f8;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: rgba(226, 232, 240, 0.95);
+  --bg-card-hover: rgba(203, 213, 224, 0.98);
+  --bg-overlay: rgba(0, 0, 0, 0.15);
+  
+  /* 텍스트 색상 */
+  --text-primary: #000000;
+  --text-secondary: #1a1a1a;
+  --text-tertiary: #333333;
+  --text-muted: #666666;
+  --text-inverse: #ffffff;
+  
+  /* 테두리 색상 */
+  --border-primary: rgba(0, 0, 0, 0.25);
+  --border-secondary: rgba(0, 0, 0, 0.35);
+  --border-accent: rgba(59, 130, 246, 0.5);
+  --border-focus: #3b82f6;
+  
+  /* 그라데이션 */
+  --gradient-primary: linear-gradient(135deg, #ffffff 0%, #f0f4f8 50%, #ffffff 100%);
+  --gradient-secondary: linear-gradient(135deg, #3b82f6, #6366f1);
+  --gradient-accent: linear-gradient(135deg, #f97316, #ef4444);
+  --gradient-success: linear-gradient(135deg, #10b981, #14b8a6);
+  --gradient-purple: linear-gradient(135deg, #8b5cf6, #ec4899);
+  --gradient-text: linear-gradient(135deg, #000000, #1a1a1a);
+  
+  /* 그림자 */
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.18);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.18);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.18);
+  --shadow-glow: 0 0 25px rgba(59, 130, 246, 0.35);
+  
+  /* 상태 색상 */
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
+  --info: #2563eb;
+  
+  /* 소스별 색상 */
+  --source-coindesk: #2563eb;
+  --source-cointelegraph: #7c3aed;
+  --source-bitcoin: #ea580c;
+  --source-decrypt: #059669;
+  --source-block: #dc2626;
+  
+  /* 스크롤바 */
+  --scrollbar-track: rgba(0, 0, 0, 0.15);
+  --scrollbar-thumb: linear-gradient(135deg, #6366f1, #3b82f6);
+  --scrollbar-thumb-hover: linear-gradient(135deg, #4f46e5, #2563eb);
+}
+
+/* 기본값 (다크 모드) */
+:root {
+  /* 배경 색상 */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e1b4b;
+  --bg-tertiary: #1e293b;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-hover: rgba(255, 255, 255, 0.1);
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* 텍스트 색상 */
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #1f2937;
+  
+  /* 테두리 색상 */
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.2);
+  --border-accent: rgba(59, 130, 246, 0.3);
+  --border-focus: #3b82f6;
+  
+  /* 그라데이션 */
+  --gradient-primary: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  --gradient-secondary: linear-gradient(135deg, #3b82f6, #6366f1);
+  --gradient-accent: linear-gradient(135deg, #f97316, #ef4444);
+  --gradient-success: linear-gradient(135deg, #10b981, #14b8a6);
+  --gradient-purple: linear-gradient(135deg, #8b5cf6, #ec4899);
+  --gradient-text: linear-gradient(135deg, #ffffff, #e0e7ff);
+  
+  /* 그림자 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.3);
+  
+  /* 상태 색상 */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* 소스별 색상 */
+  --source-coindesk: #3b82f6;
+  --source-cointelegraph: #8b5cf6;
+  --source-bitcoin: #f97316;
+  --source-decrypt: #10b981;
+  --source-block: #ef4444;
+  
+  /* 스크롤바 */
+  --scrollbar-track: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb: linear-gradient(135deg, #8b5cf6, #ec4899);
+  --scrollbar-thumb-hover: linear-gradient(135deg, #7c3aed, #db2777);
+}

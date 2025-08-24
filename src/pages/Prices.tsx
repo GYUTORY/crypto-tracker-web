@@ -135,7 +135,7 @@ export function Prices() {
             <div style={{
               width: '4rem',
               height: '4rem',
-              background: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
+              background: 'var(--gradient-secondary)',
               borderRadius: '1.5rem',
               display: 'flex',
               alignItems: 'center',
@@ -148,14 +148,14 @@ export function Prices() {
               <h1 style={{
                 fontSize: '3rem',
                 fontWeight: '900',
-                background: 'linear-gradient(135deg, #ffffff, #e0e7ff)',
+                background: 'var(--gradient-text)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 margin: 0
               }}>
                 가격 조회
               </h1>
-              <p style={{ color: '#9ca3af', fontSize: '1.25rem', margin: 0 }}>실시간 암호화폐 가격 정보</p>
+              <p style={{ color: 'var(--text-tertiary)', fontSize: '1.25rem', margin: 0 }}>실시간 암호화폐 가격 정보</p>
             </div>
           </div>
         </div>
@@ -184,7 +184,7 @@ export function Prices() {
                   <div style={{
                     width: '3rem',
                     height: '3rem',
-                    background: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
+                    background: 'var(--gradient-secondary)',
                     borderRadius: '1rem',
                     display: 'flex',
                     alignItems: 'center',
@@ -194,8 +194,8 @@ export function Prices() {
                     <span style={{ fontSize: '1.5rem' }}>🔍</span>
                   </div>
                   <div>
-                    <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', margin: 0 }}>코인 가격 검색</h2>
-                    <p style={{ color: '#9ca3af', margin: 0 }}>원하는 코인의 실시간 가격을 확인하세요</p>
+                    <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>코인 가격 검색</h2>
+                    <p style={{ color: 'var(--text-tertiary)', margin: 0 }}>실시간 가격 정보</p>
                   </div>
                 </div>
 
@@ -242,7 +242,7 @@ export function Prices() {
                       }}
                       onClick={() => setShowDropdown(!showDropdown)}
                     >
-                      <span style={{ color: '#9ca3af', fontSize: '1.25rem' }}>▼</span>
+                      <span style={{ color: 'var(--text-tertiary)', fontSize: '1.25rem' }}>▼</span>
                     </div>
                     
                     {/* 드롭다운 메뉴 */}
@@ -273,7 +273,7 @@ export function Prices() {
                          }}>
                            <div style={{
                              fontSize: '0.875rem',
-                             color: '#9ca3af',
+                             color: 'var(--text-tertiary)',
                              fontWeight: '500',
                              marginBottom: '0.5rem'
                            }}>
@@ -311,7 +311,7 @@ export function Prices() {
                                 <div style={{
                                   width: '1.5rem',
                                   height: '1.5rem',
-                                  background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+                                  background: 'var(--gradient-secondary)',
                                   borderRadius: '0.375rem',
                                   display: 'flex',
                                   alignItems: 'center',
@@ -392,7 +392,7 @@ export function Prices() {
                                     gap: '0.5rem'
                                   }}>
                                     <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>🕒</span>
-                                    <span style={{ color: 'white', fontSize: '0.875rem' }}>{symbol}</span>
+                                    <span style={{ color: 'var(--text-primary)', fontSize: '0.875rem' }}>{symbol}</span>
                                   </div>
                                   <button
                                     onClick={(e) => {
@@ -402,7 +402,7 @@ export function Prices() {
                                     style={{
                                       background: 'none',
                                       border: 'none',
-                                      color: '#9ca3af',
+                                      color: 'var(--text-tertiary)',
                                       cursor: 'pointer',
                                       fontSize: '0.75rem',
                                       padding: '0.25rem'
@@ -416,7 +416,7 @@ export function Prices() {
                           ) : (
                             <div style={{
                               padding: '0.5rem 0.75rem',
-                              color: '#9ca3af',
+                              color: 'var(--text-tertiary)',
                               fontSize: '0.875rem',
                               fontStyle: 'italic'
                             }}>
@@ -432,7 +432,7 @@ export function Prices() {
             disabled={isLoadingPrice}
             style={{ 
                       padding: '1rem 2rem',
-                      background: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
+                      background: 'var(--gradient-secondary)',
                       color: 'white',
                       borderRadius: '1rem',
                       fontWeight: 'bold',
@@ -494,12 +494,12 @@ export function Prices() {
                           width: '3rem',
                           height: '3rem',
                           border: '4px solid rgba(59, 130, 246, 0.3)',
-                          borderTop: '4px solid #3b82f6',
+                          borderTop: '4px solid var(--gradient-secondary)',
                   borderRadius: '50%',
                   animation: 'spin 1s linear infinite',
                   margin: '0 auto 1rem'
                         }}></div>
-                        <p style={{ color: '#9ca3af' }}>가격 정보를 불러오는 중...</p>
+                        <p style={{ color: 'var(--text-tertiary)' }}>가격 정보를 불러오는 중...</p>
               </div>
             )}
             
@@ -513,8 +513,8 @@ export function Prices() {
                         border: '1px solid rgba(239, 68, 68, 0.2)'
                       }}>
                         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>❌</div>
-                        <p style={{ color: '#f87171', fontWeight: 'bold', marginBottom: '0.5rem' }}>가격 정보를 불러올 수 없습니다</p>
-                        <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>심볼을 확인하거나 잠시 후 다시 시도해주세요</p>
+                        <p style={{ color: 'var(--status-error)', fontWeight: 'bold', marginBottom: '0.5rem' }}>가격 정보를 불러올 수 없습니다</p>
+                        <p style={{ color: 'var(--text-tertiary)', fontSize: '0.875rem' }}>심볼을 확인하거나 잠시 후 다시 시도해주세요</p>
               </div>
             )}
             
@@ -545,7 +545,7 @@ export function Prices() {
                                 <div style={{
                                   width: '4rem',
                                   height: '4rem',
-                                  background: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
+                                  background: 'var(--gradient-secondary)',
                                   borderRadius: '1rem',
                                   display: 'flex',
                                   alignItems: 'center',
@@ -558,12 +558,12 @@ export function Prices() {
                                   {getCoinIcon(priceData.symbol)}
                                 </div>
                                 <div>
-                                  <h3 style={{ color: 'white', fontWeight: 'bold', fontSize: '1.25rem', margin: 0 }}>{getCoinName(priceData.symbol)}</h3>
+                                  <h3 style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '1.25rem', margin: 0 }}>{getCoinName(priceData.symbol)}</h3>
                                   <p style={{ color: '#9ca3af', fontSize: '0.875rem', fontWeight: '500', margin: 0 }}>{priceData.symbol}</p>
                                 </div>
                               </div>
                               <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '2.5rem', fontWeight: '900', color: 'white', marginBottom: '0.25rem' }}>
+                                <div style={{ fontSize: '2.5rem', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
                                   {formatPrice(priceData.price.toString())}
                                 </div>
                                 <div style={{
@@ -575,8 +575,8 @@ export function Prices() {
                                     ? 'rgba(34, 197, 94, 0.2)' 
                                     : 'rgba(239, 68, 68, 0.2)',
                                   color: priceData.change?.startsWith('+') 
-                                    ? '#22c55e' 
-                                    : '#ef4444',
+                                    ? 'var(--status-success)' 
+                                    : 'var(--status-error)',
                                   border: `1px solid ${priceData.change?.startsWith('+') 
                                     ? 'rgba(34, 197, 94, 0.3)' 
                                     : 'rgba(239, 68, 68, 0.3)'}`,
@@ -606,7 +606,7 @@ export function Prices() {
                                 top: '50%',
                                 transform: 'translateY(-50%) rotate(-90deg)',
                                 fontSize: '0.75rem',
-                                color: '#9ca3af',
+                                color: 'var(--text-tertiary)',
                                 fontWeight: '500',
                                 whiteSpace: 'nowrap'
                               }}>
@@ -619,7 +619,7 @@ export function Prices() {
                                 top: '0.5rem',
                                 right: '0.75rem',
                                 fontSize: '0.75rem',
-                                color: '#3b82f6',
+                                color: 'var(--text-accent)',
                                 fontWeight: '600',
                                 background: 'rgba(59, 130, 246, 0.1)',
                                 padding: '0.25rem 0.5rem',
@@ -636,7 +636,7 @@ export function Prices() {
                                 left: '50%',
                                 transform: 'translateX(-50%)',
                                 fontSize: '0.75rem',
-                                color: '#9ca3af',
+                                color: 'var(--text-tertiary)',
                                 fontWeight: '500'
                               }}>
                                 최근 10시간
@@ -658,7 +658,7 @@ export function Prices() {
                                       key={i}
                                       style={{
                                         width: '0.25rem',
-                                        background: 'linear-gradient(to top, #3b82f6, #06b6d4)',
+                                        background: 'var(--gradient-secondary)',
                                         borderRadius: '9999px',
                                         transition: 'all 0.3s',
                                         height: `${Math.max(20, Math.min(80, height))}%`,
@@ -687,7 +687,7 @@ export function Prices() {
             <div style={{
               width: '3rem',
               height: '3rem',
-              background: 'linear-gradient(135deg, #f97316, #ef4444)',
+              background: 'var(--gradient-accent)',
               borderRadius: '1rem',
               display: 'flex',
               alignItems: 'center',
@@ -697,8 +697,8 @@ export function Prices() {
               <span style={{ fontSize: '1.5rem' }}>🔥</span>
             </div>
             <div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white', margin: 0 }}>인기 코인</h2>
-              <p style={{ color: '#9ca3af', margin: 0 }}>실시간 인기 암호화폐 가격</p>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>인기 코인</h2>
+              <p style={{ color: 'var(--text-tertiary)', margin: 0 }}>실시간 인기 암호화폐 가격</p>
             </div>
           </div>
 
@@ -765,7 +765,7 @@ export function Prices() {
                               {getCoinIcon(symbol)}
                             </div>
                             <div>
-                              <h3 style={{ color: 'white', fontWeight: 'bold', fontSize: '1.25rem', margin: 0 }}>{getCoinName(symbol)}</h3>
+                              <h3 style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '1.25rem', margin: 0 }}>{getCoinName(symbol)}</h3>
                               <p style={{ color: '#9ca3af', fontSize: '0.875rem', fontWeight: '500', margin: 0 }}>{symbol}</p>
                             </div>
                           </div>
@@ -773,7 +773,7 @@ export function Prices() {
                             <div style={{ 
                               fontSize: '1.75rem', 
                               fontWeight: '900', 
-                              color: 'white', 
+                              color: 'var(--text-primary)', 
                               marginBottom: '0.5rem',
                               lineHeight: '1.2'
                             }}>
@@ -832,7 +832,7 @@ export function Prices() {
                             top: '0.5rem',
                             right: '0.75rem',
                             fontSize: '0.75rem',
-                            color: '#8b5cf6',
+                            color: 'var(--text-accent)',
                             fontWeight: '600',
                             background: 'rgba(139, 92, 246, 0.1)',
                             padding: '0.25rem 0.5rem',
@@ -888,7 +888,7 @@ export function Prices() {
                                       key={i}
                                       style={{
                                         width: '0.25rem',
-                                        background: 'linear-gradient(to top, #8b5cf6, #3b82f6)',
+                                        background: 'var(--gradient-secondary)',
                                         borderRadius: '9999px',
                                         transition: 'all 0.3s',
                                         height: `${height}%`,
@@ -898,11 +898,11 @@ export function Prices() {
                                       title={`${i + 1}시간 전: $${price.toFixed(2)}`}
                                       onMouseEnter={(e) => {
                                         e.currentTarget.style.transform = 'scale(1.2)';
-                                        e.currentTarget.style.background = 'linear-gradient(to top, #a78bfa, #60a5fa)';
+                                        e.currentTarget.style.background = 'var(--gradient-secondary)';
                                       }}
                                       onMouseLeave={(e) => {
                                         e.currentTarget.style.transform = 'scale(1)';
-                                        e.currentTarget.style.background = 'linear-gradient(to top, #8b5cf6, #3b82f6)';
+                                        e.currentTarget.style.background = 'var(--gradient-secondary)';
                                       }}
                                     ></div>
                                   );
@@ -925,7 +925,7 @@ export function Prices() {
                                       key={i}
                                       style={{
                                         width: '0.25rem',
-                                        background: 'linear-gradient(to top, #8b5cf6, #3b82f6)',
+                                        background: 'var(--gradient-secondary)',
                                         borderRadius: '9999px',
                                         transition: 'all 0.3s',
                                         height: `${height}%`,
@@ -936,12 +936,12 @@ export function Prices() {
                                       title={`${i + 1}시간 전: $${priceVariation.toFixed(2)}`}
                                       onMouseEnter={(e) => {
                                         e.currentTarget.style.transform = 'scale(1.2)';
-                                        e.currentTarget.style.background = 'linear-gradient(to top, #a78bfa, #60a5fa)';
+                                        e.currentTarget.style.background = 'var(--gradient-secondary)';
                                         e.currentTarget.style.opacity = '1';
                                       }}
                                       onMouseLeave={(e) => {
                                         e.currentTarget.style.transform = 'scale(1)';
-                                        e.currentTarget.style.background = 'linear-gradient(to top, #8b5cf6, #3b82f6)';
+                                        e.currentTarget.style.background = 'var(--gradient-secondary)';
                                         e.currentTarget.style.opacity = '0.8';
                                       }}
                                     ></div>
@@ -966,14 +966,14 @@ export function Prices() {
                             <div style={{ 
                               width: '0.5rem', 
                               height: '0.5rem', 
-                              background: '#a78bfa', 
+                              background: 'var(--text-accent)', 
                               borderRadius: '50%',
                               boxShadow: '0 0 8px rgba(167, 139, 250, 0.5)'
                             }}></div>
-                            <span style={{ color: '#9ca3af', fontWeight: '500' }}>24h Vol</span>
+                            <span style={{ color: 'var(--text-tertiary)', fontWeight: '500' }}>24h Vol</span>
                           </div>
                           <span style={{ 
-                            color: '#a78bfa', 
+                            color: 'var(--text-accent)', 
                             fontWeight: '600',
                             fontSize: '1rem'
                           }}>

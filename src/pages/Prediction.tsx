@@ -131,16 +131,16 @@ export function Prediction() {
             <div style={{
               width: '0.5rem',
               height: '0.5rem',
-              background: '#22c55e',
+                               background: 'var(--status-success)',
               borderRadius: '50%',
               animation: 'pulse 2s infinite'
             }}></div>
-            <span style={{ color: '#22c55e', fontSize: '0.875rem', fontWeight: '500' }}>AI 예측 시스템 활성화</span>
+                           <span style={{ color: 'var(--status-success)', fontSize: '0.875rem', fontWeight: '500' }}>AI 예측 시스템 활성화</span>
           </div>
           <h1 style={{
             fontSize: '4rem',
             fontWeight: '900',
-            background: 'linear-gradient(135deg, #ffffff, #e0e7ff)',
+                           background: 'var(--gradient-text)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             marginBottom: '1.5rem',
@@ -150,12 +150,12 @@ export function Prediction() {
           </h1>
           <p style={{ 
             fontSize: '1.25rem',
-            color: '#d1d5db',
+                           color: 'var(--text-tertiary)',
             maxWidth: '48rem',
             margin: '0 auto',
             lineHeight: '1.6'
           }}>
-            최첨단 AI가 제공하는 실시간 암호화폐 가격 예측으로 <span style={{ color: '#a78bfa', fontWeight: '600' }}>미래 투자 전략</span>을 수립하세요
+            최첨단 AI가 제공하는 실시간 암호화폐 가격 예측으로 <span style={{ color: 'var(--text-accent)', fontWeight: '600' }}>미래 투자 전략</span>을 수립하세요
           </p>
         </div>
 
@@ -165,7 +165,7 @@ export function Prediction() {
             <div style={{
               width: '3rem',
               height: '3rem',
-              background: 'linear-gradient(135deg, #f97316, #ef4444)',
+              background: 'var(--gradient-accent)',
               borderRadius: '1rem',
               display: 'flex',
               alignItems: 'center',
@@ -175,8 +175,8 @@ export function Prediction() {
               <span style={{ fontSize: '1.5rem' }}>🔮</span>
             </div>
             <div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white', margin: 0 }}>코인 선택 및 예측</h2>
-              <p style={{ color: '#9ca3af', margin: 0 }}>예측하고 싶은 암호화폐를 선택하세요</p>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>코인 선택 및 예측</h2>
+              <p style={{ color: 'var(--text-tertiary)', margin: 0 }}>AI 기반 가격 예측</p>
             </div>
           </div>
 
@@ -201,11 +201,11 @@ export function Prediction() {
                     border: '2px solid rgba(249, 115, 22, 0.3)',
                     borderRadius: '1rem',
                     fontSize: '1rem',
-                    background: 'rgba(255, 255, 255, 0.95)',
-                    backdropFilter: 'blur(10px)',
-                    transition: 'all 0.3s ease',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                    color: searchTerm ? '#1f2937' : '#9ca3af',
+                                         background: 'var(--bg-card)',
+                     backdropFilter: 'blur(10px)',
+                     transition: 'all 0.3s ease',
+                     boxShadow: 'var(--shadow-md)',
+                     color: searchTerm ? 'var(--text-primary)' : 'var(--text-tertiary)',
                     cursor: 'pointer',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -229,26 +229,26 @@ export function Prediction() {
                     top: '100%',
                     left: 0,
                     right: 0,
-                    background: 'rgba(255, 255, 255, 0.98)',
-                    backdropFilter: 'blur(20px)',
-                    border: '2px solid rgba(249, 115, 22, 0.3)',
-                    borderRadius: '0.75rem',
-                    marginTop: '0.5rem',
-                    maxHeight: '400px',
-                    overflowY: 'auto',
-                    zIndex: 9999,
-                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
+                                         background: 'var(--bg-card-hover)',
+                     backdropFilter: 'blur(20px)',
+                     border: '2px solid var(--border-accent)',
+                     borderRadius: '0.75rem',
+                     marginTop: '0.5rem',
+                     maxHeight: '400px',
+                     overflowY: 'auto',
+                     zIndex: 9999,
+                     boxShadow: 'var(--shadow-lg)'
                   }}>
                     {/* 인기 코인 섹션 */}
                     <div style={{
                       padding: '0.75rem 1rem',
-                      borderBottom: '1px solid rgba(249, 115, 22, 0.1)',
-                      background: 'rgba(249, 115, 22, 0.05)'
+                                               borderBottom: '1px solid var(--border-accent)',
+                         background: 'var(--bg-card)'
                     }}>
                       <div style={{ 
                         fontSize: '0.9rem', 
                         fontWeight: '600', 
-                        color: '#f97316',
+                        color: 'var(--text-accent)',
                         marginBottom: '0.5rem'
                       }}>
                         🔥 인기 코인
@@ -264,11 +264,11 @@ export function Prediction() {
                             onClick={() => handleSymbolSelect(symbol)}
                             style={{
                               padding: '0.75rem 0.5rem',
-                              background: 'rgba(249, 115, 22, 0.1)',
-                              border: '1px solid rgba(249, 115, 22, 0.2)',
-                              borderRadius: '0.5rem',
-                              fontSize: '0.85rem',
-                              color: '#f97316',
+                                                           background: 'var(--bg-card-hover)',
+                             border: '1px solid var(--border-accent)',
+                             borderRadius: '0.5rem',
+                             fontSize: '0.85rem',
+                             color: 'var(--text-primary)',
                               cursor: 'pointer',
                               transition: 'all 0.2s ease',
                               fontWeight: '500'
@@ -298,22 +298,22 @@ export function Prediction() {
                           <div style={{
                             width: '24px',
                             height: '24px',
-                            background: 'linear-gradient(135deg, #f97316, #ef4444)',
+                            background: 'var(--gradient-accent)',
                             borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '0.7rem',
-                            color: 'white',
-                            fontWeight: 'bold'
+                                                         fontSize: '0.7rem',
+                             color: 'var(--text-inverse)',
+                             fontWeight: 'bold'
                           }}>
                             {symbol.replace('USDT', '').charAt(0)}
                           </div>
-                          <span style={{ 
-                            fontSize: '0.95rem', 
-                            color: '#374151',
-                            fontWeight: '500'
-                          }}>
+                                                     <span style={{ 
+                             fontSize: '0.95rem', 
+                             color: 'var(--text-secondary)',
+                             fontWeight: '500'
+                           }}>
                             {getKoreanCoinName(symbol)} ({symbol})
                           </span>
                         </div>
@@ -328,8 +328,8 @@ export function Prediction() {
                 disabled={isLoading}
                 style={{ 
                   padding: '1rem 2rem',
-                  background: 'linear-gradient(135deg, #f97316, #ef4444)',
-                  color: 'white',
+                  background: 'var(--gradient-accent)',
+                  color: 'var(--text-inverse)',
                   borderRadius: '1rem',
                   fontWeight: 'bold',
                   fontSize: '1.125rem',
@@ -373,24 +373,24 @@ export function Prediction() {
                 <div style={{ 
                   textAlign: 'center', 
                   padding: '4rem 2rem',
-                  background: 'rgba(255, 255, 255, 0.05)',
+                  background: 'var(--bg-card)',
                   backdropFilter: 'blur(20px)',
                   borderRadius: '1.5rem',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                  border: '1px solid var(--border-primary)'
                 }}>
                   <div style={{
                     width: '60px',
                     height: '60px',
                     border: '4px solid rgba(249, 115, 22, 0.3)',
-                    borderTop: '4px solid #f97316',
+                    borderTop: '4px solid var(--status-warning)',
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite',
                     margin: '0 auto 2rem'
                   }} />
-                  <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                  <h3 style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
                     AI 예측 중...
                   </h3>
-                  <p style={{ color: '#9ca3af', fontSize: '1.125rem' }}>
+                  <p style={{ color: 'var(--text-tertiary)', fontSize: '1.125rem' }}>
                     최첨단 AI가 {symbol}의 가격을 예측하고 있습니다
                   </p>
                 </div>
@@ -417,10 +417,10 @@ export function Prediction() {
                   }}>
                     <span style={{ fontSize: '2rem' }}>❌</span>
                   </div>
-                  <h3 style={{ color: '#ef4444', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-                    예측 오류
-                  </h3>
-                  <p style={{ color: '#fca5a5', fontSize: '1.125rem' }}>
+                                   <h3 style={{ color: 'var(--status-error)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                   예측 오류
+                 </h3>
+                 <p style={{ color: 'var(--status-error-light)', fontSize: '1.125rem' }}>
                     코인 심볼을 확인하거나 잠시 후 다시 시도해주세요
                   </p>
                 </div>
@@ -430,18 +430,18 @@ export function Prediction() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                   {/* 현재 가격 카드 */}
                   <div style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
+                    background: 'var(--bg-card)',
                     backdropFilter: 'blur(20px)',
                     borderRadius: '1.5rem',
                     padding: '2rem',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    border: '1px solid var(--border-primary)',
                     transition: 'all 0.5s'
                   }}>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'linear-gradient(135deg, #10b981, #14b8a6)',
+                                                 background: 'var(--gradient-success)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -451,30 +451,28 @@ export function Prediction() {
                       }}>
                         <span style={{ fontSize: '2rem' }}>💰</span>
                       </div>
-                      <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
-                        {symbol} 현재 가격
-                      </h3>
-                      <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#10b981', marginBottom: '0.75rem' }}>
+                      <h3 style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>현재 가격</h3>
+                                              <div style={{ fontSize: '2.5rem', fontWeight: '900', color: 'var(--status-success)', marginBottom: '0.75rem' }}>
                         ${formatPrice(currentPrice)}
                       </div>
-                      <p style={{ color: '#9ca3af', fontSize: '1rem' }}>실시간 업데이트</p>
+                                              <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>실시간 업데이트</p>
                     </div>
                   </div>
 
-                  {/* 예측 신뢰도 카드 */}
-                  <div style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(20px)',
-                    borderRadius: '1.5rem',
-                    padding: '2rem',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    transition: 'all 0.5s'
-                  }}>
+                                     {/* 예측 신뢰도 카드 */}
+                   <div style={{ 
+                     background: 'var(--bg-card)',
+                     backdropFilter: 'blur(20px)',
+                     borderRadius: '1.5rem',
+                     padding: '2rem',
+                     border: '1px solid var(--border-primary)',
+                     transition: 'all 0.5s'
+                   }}>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                        background: 'var(--gradient-purple)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -484,18 +482,16 @@ export function Prediction() {
                       }}>
                         <span style={{ fontSize: '2rem' }}>🎯</span>
                       </div>
-                      <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
-                        예측 신뢰도
-                      </h3>
+                      <h3 style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>예측 신뢰도</h3>
                       <div style={{ 
                         fontSize: '2.5rem', 
                         fontWeight: '900', 
                         marginBottom: '0.75rem',
-                        color: confidence >= 80 ? '#10b981' : confidence >= 60 ? '#f59e0b' : '#ef4444'
+                                                 color: confidence >= 80 ? 'var(--status-success)' : confidence >= 60 ? 'var(--status-warning)' : 'var(--status-error)'
                       }}>
                         {confidence}%
                       </div>
-                      <p style={{ color: '#9ca3af', fontSize: '1rem' }}>AI 예측 정확도</p>
+                                             <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>AI 예측 정확도</p>
                     </div>
                   </div>
 
@@ -512,7 +508,7 @@ export function Prediction() {
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                        background: 'var(--gradient-secondary)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -522,18 +518,16 @@ export function Prediction() {
                       }}>
                         <span style={{ fontSize: '2rem' }}>📊</span>
                       </div>
-                      <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
-                        시장 심리
-                      </h3>
+                      <h3 style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>시장 심리</h3>
                       <div style={{ 
                         fontSize: '1.5rem', 
                         fontWeight: 'bold', 
                         marginBottom: '0.75rem',
-                        color: marketSentiment === 'bullish' ? '#10b981' : marketSentiment === 'bearish' ? '#ef4444' : '#f59e0b'
+                                                 color: marketSentiment === 'bullish' ? 'var(--status-success)' : marketSentiment === 'bearish' ? 'var(--status-error)' : 'var(--status-warning)'
                       }}>
                         {marketSentiment === 'bullish' ? '📈 낙관적' : marketSentiment === 'bearish' ? '📉 비관적' : '➡️ 중립적'}
                       </div>
-                      <p style={{ color: '#9ca3af', fontSize: '1rem' }}>현재 시장 분위기</p>
+                                              <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>현재 시장 분위기</p>
                     </div>
                   </div>
                 </div>
@@ -546,7 +540,7 @@ export function Prediction() {
                     <div style={{
                       width: '3rem',
                       height: '3rem',
-                      background: 'linear-gradient(135deg, #f97316, #ef4444)',
+                      background: 'var(--gradient-accent)',
                       borderRadius: '1rem',
                       display: 'flex',
                       alignItems: 'center',
@@ -556,27 +550,27 @@ export function Prediction() {
                       <span style={{ fontSize: '1.5rem' }}>📈</span>
                     </div>
                     <div>
-                      <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white', margin: 0 }}>시간대별 예측</h2>
-                      <p style={{ color: '#9ca3af', margin: 0 }}>AI가 분석한 가격 예측 결과</p>
+                      <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>시간대별 예측</h2>
+                      <p style={{ color: 'var(--text-tertiary)', margin: 0 }}>AI가 분석한 가격 예측 결과</p>
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
-                    {/* 1시간 예측 */}
-                    {oneHourPrediction && (
-                      <div style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        backdropFilter: 'blur(20px)',
-                        borderRadius: '1.5rem',
-                        padding: '2rem',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        transition: 'all 0.5s'
-                      }}>
+                                         {/* 1시간 예측 */}
+                     {oneHourPrediction && (
+                       <div style={{
+                         background: 'var(--bg-card)',
+                         backdropFilter: 'blur(20px)',
+                         borderRadius: '1.5rem',
+                         padding: '2rem',
+                         border: '1px solid var(--border-primary)',
+                         transition: 'all 0.5s'
+                       }}>
                         <div style={{ textAlign: 'center' }}>
                           <div style={{
                             width: '4rem',
                             height: '4rem',
-                            background: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                            background: 'var(--gradient-secondary)',
                             borderRadius: '1rem',
                             display: 'flex',
                             alignItems: 'center',
@@ -586,47 +580,47 @@ export function Prediction() {
                           }}>
                             <span style={{ fontSize: '2rem' }}>🔮</span>
                           </div>
-                          <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
+                          <h3 style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
                             1시간 예측
                           </h3>
                           <div style={{ 
                             fontSize: '2rem', 
                             fontWeight: '900', 
                             marginBottom: '0.75rem',
-                            color: '#3b82f6'
+                            color: 'var(--text-accent)'
                           }}>
                             ${formatPrice(oneHourPrediction.predictedPrice)}
                           </div>
-                          <div style={{ 
-                            fontSize: '1rem', 
-                            color: oneHourPrediction.direction === 'up' ? '#10b981' : '#ef4444',
-                            fontWeight: '600',
-                            marginBottom: '0.5rem'
-                          }}>
+                                                     <div style={{ 
+                             fontSize: '1rem', 
+                             color: oneHourPrediction.direction === 'up' ? 'var(--status-success)' : 'var(--status-error)',
+                             fontWeight: '600',
+                             marginBottom: '0.5rem'
+                           }}>
                             {oneHourPrediction.direction === 'up' ? '📈 상승' : '📉 하락'}
                           </div>
-                          <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>
-                            {oneHourPrediction.confidence}% 신뢰도
-                          </p>
+                                                     <p style={{ color: 'var(--text-tertiary)', fontSize: '0.875rem' }}>
+                             {oneHourPrediction.confidence}% 신뢰도
+                           </p>
                         </div>
                       </div>
                     )}
                     
-                    {/* 4시간 예측 */}
-                    {fourHourPrediction && (
-                      <div style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        backdropFilter: 'blur(20px)',
-                        borderRadius: '1.5rem',
-                        padding: '2rem',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        transition: 'all 0.5s'
-                      }}>
+                                         {/* 4시간 예측 */}
+                     {fourHourPrediction && (
+                       <div style={{
+                         background: 'var(--bg-card)',
+                         backdropFilter: 'blur(20px)',
+                         borderRadius: '1.5rem',
+                         padding: '2rem',
+                         border: '1px solid var(--border-primary)',
+                         transition: 'all 0.5s'
+                       }}>
                         <div style={{ textAlign: 'center' }}>
                           <div style={{
                             width: '4rem',
                             height: '4rem',
-                            background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                            background: 'var(--gradient-purple)',
                             borderRadius: '1rem',
                             display: 'flex',
                             alignItems: 'center',
@@ -636,47 +630,47 @@ export function Prediction() {
                           }}>
                             <span style={{ fontSize: '2rem' }}>📊</span>
                           </div>
-                          <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
+                          <h3 style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
                             4시간 예측
                           </h3>
                           <div style={{ 
                             fontSize: '2rem', 
                             fontWeight: '900', 
                             marginBottom: '0.75rem',
-                            color: '#8b5cf6'
+                            color: 'var(--text-accent)'
                           }}>
                             ${formatPrice(fourHourPrediction.predictedPrice)}
                           </div>
-                          <div style={{ 
-                            fontSize: '1rem', 
-                            color: fourHourPrediction.direction === 'up' ? '#10b981' : '#ef4444',
-                            fontWeight: '600',
-                            marginBottom: '0.5rem'
-                          }}>
+                                                     <div style={{ 
+                             fontSize: '1rem', 
+                             color: fourHourPrediction.direction === 'up' ? 'var(--status-success)' : 'var(--status-error)',
+                             fontWeight: '600',
+                             marginBottom: '0.5rem'
+                           }}>
                             {fourHourPrediction.direction === 'up' ? '📈 상승' : '📉 하락'}
                           </div>
-                          <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>
-                            {fourHourPrediction.confidence}% 신뢰도
-                          </p>
+                                                     <p style={{ color: 'var(--text-tertiary)', fontSize: '0.875rem' }}>
+                             {fourHourPrediction.confidence}% 신뢰도
+                           </p>
                         </div>
                       </div>
                     )}
                     
-                    {/* 24시간 예측 */}
-                    {oneDayPrediction && (
-                      <div style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        backdropFilter: 'blur(20px)',
-                        borderRadius: '1.5rem',
-                        padding: '2rem',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        transition: 'all 0.5s'
-                      }}>
+                                         {/* 24시간 예측 */}
+                     {oneDayPrediction && (
+                       <div style={{
+                         background: 'var(--bg-card)',
+                         backdropFilter: 'blur(20px)',
+                         borderRadius: '1.5rem',
+                         padding: '2rem',
+                         border: '1px solid var(--border-primary)',
+                         transition: 'all 0.5s'
+                       }}>
                         <div style={{ textAlign: 'center' }}>
                           <div style={{
                             width: '4rem',
                             height: '4rem',
-                            background: 'linear-gradient(135deg, #f97316, #ef4444)',
+                            background: 'var(--gradient-accent)',
                             borderRadius: '1rem',
                             display: 'flex',
                             alignItems: 'center',
@@ -686,28 +680,28 @@ export function Prediction() {
                           }}>
                             <span style={{ fontSize: '2rem' }}>📈</span>
                           </div>
-                          <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
+                          <h3 style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
                             24시간 예측
                           </h3>
                           <div style={{ 
                             fontSize: '2rem', 
                             fontWeight: '900', 
                             marginBottom: '0.75rem',
-                            color: '#f97316'
+                            color: 'var(--text-accent)'
                           }}>
                             ${formatPrice(oneDayPrediction.predictedPrice)}
                           </div>
-                          <div style={{ 
-                            fontSize: '1rem', 
-                            color: oneDayPrediction.direction === 'up' ? '#10b981' : '#ef4444',
-                            fontWeight: '600',
-                            marginBottom: '0.5rem'
-                          }}>
+                                                     <div style={{ 
+                             fontSize: '1rem', 
+                             color: oneDayPrediction.direction === 'up' ? 'var(--status-success)' : 'var(--status-error)',
+                             fontWeight: '600',
+                             marginBottom: '0.5rem'
+                           }}>
                             {oneDayPrediction.direction === 'up' ? '📈 상승' : '📉 하락'}
                           </div>
-                          <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>
-                            {oneDayPrediction.confidence}% 신뢰도
-                          </p>
+                                                     <p style={{ color: 'var(--text-tertiary)', fontSize: '0.875rem' }}>
+                             {oneDayPrediction.confidence}% 신뢰도
+                           </p>
                         </div>
                       </div>
                     )}
@@ -720,8 +714,8 @@ export function Prediction() {
                       disabled={createPredictionMutation.isPending}
                       style={{ 
                         padding: '1rem 2rem',
-                        background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-                        color: 'white',
+                                                 background: 'var(--gradient-purple)',
+                         color: 'var(--text-inverse)',
                         borderRadius: '1rem',
                         fontWeight: 'bold',
                         fontSize: '1.125rem',

@@ -1,9 +1,8 @@
-// 공통 응답 타입
-export interface ApiResponse<T = any> {
-  result: boolean;
-  msg: string;
-  result_data: T;
-  code: string;
+// API 응답 타입
+export interface ApiResponse<T> {
+  success: boolean
+  message: string
+  data: T
 }
 
 // 가격 데이터 타입
