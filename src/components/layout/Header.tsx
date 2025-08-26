@@ -5,7 +5,8 @@ const navItems = [
   { path: '/', label: '대시보드', icon: '🏠' },
   { path: '/prices', label: '가격 조회', icon: '💰' },
   { path: '/charts', label: '차트', icon: '📈' },
-  { path: '/analysis', label: 'AI 분석', icon: '🤖' },
+  { path: '/ai-recommendations', label: 'AI 추천', icon: '🤖' },
+  { path: '/analysis', label: 'AI 분석', icon: '🔍' },
   { path: '/prediction', label: '예측', icon: '🔮' },
   { path: '/news', label: '뉴스', icon: '📰' }
 ];

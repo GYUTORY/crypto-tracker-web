@@ -41,9 +41,9 @@ export const ThemeToggle = () => {
         position: 'absolute',
         inset: 0,
         background: theme === 'dark' 
-          ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' 
+          ? 'linear-gradient(135deg, #f59e0b, #d97706)' 
           : 'linear-gradient(135deg, #1e293b, #334155)',
-        opacity: 0.1,
+        opacity: theme === 'dark' ? 0.08 : 0.1,
         transition: 'opacity 0.3s ease'
       }} />
       
@@ -55,44 +55,35 @@ export const ThemeToggle = () => {
         transition: 'transform 0.3s ease'
       }}>
         {theme === 'dark' ? (
-          // 라이트 모드 아이콘 (태양)
+          // 라이트 모드 아이콘 (태양) - 미니멀한 디자인
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '1.5rem',
-            height: '1.5rem',
+            width: '1.25rem',
+            height: '1.25rem',
             position: 'relative'
           }}>
-            {/* 태양 빛 */}
-            <div style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, #fbbf24 0%, transparent 70%)',
-              animation: 'pulse 2s infinite'
-            }} />
             {/* 태양 중심 */}
             <div style={{
-              width: '0.75rem',
-              height: '0.75rem',
+              width: '0.875rem',
+              height: '0.875rem',
               borderRadius: '50%',
-              background: '#fbbf24',
-              boxShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
+              background: '#f59e0b',
+              boxShadow: '0 0 6px rgba(245, 158, 11, 0.3)'
             }} />
-            {/* 태양 빛선들 */}
-            {[...Array(8)].map((_, i) => (
+            {/* 태양 빛선들 - 더 얇고 세련되게 */}
+            {[...Array(6)].map((_, i) => (
               <div
                 key={i}
                 style={{
                   position: 'absolute',
-                  width: '2px',
-                  height: '0.5rem',
-                  background: '#fbbf24',
-                  borderRadius: '1px',
-                  transform: `rotate(${i * 45}deg) translateY(-0.75rem)`,
-                  opacity: 0.7
+                  width: '1px',
+                  height: '0.375rem',
+                  background: '#f59e0b',
+                  borderRadius: '0.5px',
+                  transform: `rotate(${i * 60}deg) translateY(-0.625rem)`,
+                  opacity: 0.6
                 }}
               />
             ))}
