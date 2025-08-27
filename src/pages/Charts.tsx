@@ -6,7 +6,7 @@ import { ChartControls } from '../components/charts/ChartControls'
 type ChartType = 'candlestick' | 'line' | 'bar'
 type TimeInterval = '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w' | '1M'
 
-export const Charts: React.FC = () => {
+const Charts: React.FC = () => {
   const [symbol, setSymbol] = useState<string>('BTCUSDT')
   const [interval, setInterval] = useState<TimeInterval>('1h')
   const [chartType, setChartType] = useState<ChartType>('candlestick')
@@ -195,3 +195,5 @@ export const Charts: React.FC = () => {
     </div>
   )
 }
+
+export default Charts;

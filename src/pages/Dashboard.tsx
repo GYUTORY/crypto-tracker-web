@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { usePopularSymbols, usePrices, useBitcoinNews, useChartData, useMarketStats } from '../hooks/useApi';
 
-export function Dashboard() {
+function Dashboard() {
   const navigate = useNavigate();
 
   // 실제 API 데이터 가져오기
@@ -833,3 +833,5 @@ export function Dashboard() {
     </div>
   );
 }
+
+export default Dashboard;

@@ -14,14 +14,23 @@ import type {
 } from '../types/api';
 
 /**
+ * 동적 refetch 간격을 계산하는 유틸리티 함수
+ * 페이지가 활성화되어 있을 때만 데이터를 갱신합니다
+ */
+const getRefetchInterval = (baseInterval: number) => {
+  return document.visibilityState === 'visible' ? baseInterval : false;
+};
+
+/**
  * 특정 코인의 실시간 가격 정보를 조회하는 훅
  * @param symbol - 코인 심볼 (예: 'BTCUSDT')
  * @returns React Query 결과 객체 (data, isLoading, error 등)
  * 
  * 특징:
- * - 30초마다 자동으로 데이터를 갱신합니다
+ * - 페이지가 활성화되어 있을 때만 30초마다 자동으로 데이터를 갱신합니다
  * - 심볼이 유효한 경우에만 API를 호출합니다
  * - 캐시된 데이터를 우선적으로 사용합니다
+ * - 성능 최적화를 위한 staleTime과 gcTime 설정
  */
 export function usePrice(symbol: string) {
   return useQuery({
@@ -31,7 +40,11 @@ export function usePrice(symbol: string) {
       return response.result_data;
     },
     enabled: !!symbol,
-    refetchInterval: 30000, // 30초마다 갱신
+    refetchInterval: getRefetchInterval(30000), // 30초마다 갱신 (페이지 활성화 시에만)
+    staleTime: 10 * 1000, // 10초간 fresh 상태 유지
+    gcTime: 5 * 60 * 1000, // 5분간 캐시 유지
+    retry: 2, // 재시도 횟수 제한
+    retryDelay: 1000, // 재시도 간격 1초
   });
 }
 
@@ -42,8 +55,9 @@ export function usePrice(symbol: string) {
  * 
  * 특징:
  * - 여러 API 요청을 병렬로 처리합니다
- * - 30초마다 자동으로 데이터를 갱신합니다
+ * - 페이지가 활성화되어 있을 때만 30초마다 자동으로 데이터를 갱신합니다
  * - 빈 배열인 경우 API를 호출하지 않습니다
+ * - 성능 최적화를 위한 캐시 설정
  */
 export function usePrices(symbols: string[]) {
   return useQuery({
@@ -55,7 +69,11 @@ export function usePrices(symbols: string[]) {
       };
     },
     enabled: symbols.length > 0,
-    refetchInterval: 30000,
+    refetchInterval: getRefetchInterval(30000), // 30초마다 갱신 (페이지 활성화 시에만)
+    staleTime: 10 * 1000, // 10초간 fresh 상태 유지
+    gcTime: 5 * 60 * 1000, // 5분간 캐시 유지
+    retry: 2,
+    retryDelay: 1000,
   });
 }
 
@@ -67,9 +85,10 @@ export function usePrices(symbols: string[]) {
  * @returns React Query 결과 객체 (차트 데이터 포함)
  * 
  * 특징:
- * - 1분마다 자동으로 데이터를 갱신합니다
+ * - 페이지가 활성화되어 있을 때만 2분마다 자동으로 데이터를 갱신합니다
  * - 캔들스틱 차트에 필요한 OHLCV 데이터를 제공합니다
  * - 다양한 시간대별 데이터를 지원합니다
+ * - 차트 데이터는 상대적으로 안정적이므로 더 긴 캐시 시간 적용
  */
 export function useChartData(symbol: string, timeframe: string = '1h', limit: number = 24) {
   return useQuery({
@@ -79,7 +98,11 @@ export function useChartData(symbol: string, timeframe: string = '1h', limit: nu
       return response.result_data;
     },
     enabled: !!symbol,
-    refetchInterval: 60000, // 1분마다 갱신
+    refetchInterval: getRefetchInterval(120000), // 2분마다 갱신 (페이지 활성화 시에만)
+    staleTime: 60 * 1000, // 1분간 fresh 상태 유지
+    gcTime: 10 * 60 * 1000, // 10분간 캐시 유지
+    retry: 2,
+    retryDelay: 2000,
   });
 }
 
@@ -88,9 +111,10 @@ export function useChartData(symbol: string, timeframe: string = '1h', limit: nu
  * @returns React Query 결과 객체 (시장 통계 데이터 포함)
  * 
  * 특징:
- * - 5분마다 자동으로 데이터를 갱신합니다
+ * - 페이지가 활성화되어 있을 때만 5분마다 자동으로 데이터를 갱신합니다
  * - 시가총액, 거래량, BTC 지배율 등 포함
  * - 공포탐욕 지수 등 시장 심리 지표 제공
+ * - 시장 통계는 자주 변경되지 않으므로 긴 캐시 시간 적용
  */
 export function useMarketStats() {
   return useQuery({
@@ -99,7 +123,11 @@ export function useMarketStats() {
       const response: any = await marketApi.getMarketStats();
       return response.result_data;
     },
-    refetchInterval: 300000, // 5분마다 갱신
+    refetchInterval: getRefetchInterval(300000), // 5분마다 갱신 (페이지 활성화 시에만)
+    staleTime: 2 * 60 * 1000, // 2분간 fresh 상태 유지
+    gcTime: 15 * 60 * 1000, // 15분간 캐시 유지
+    retry: 2,
+    retryDelay: 3000,
   });
 }
 
@@ -112,6 +140,7 @@ export function useMarketStats() {
  * - RSI, MACD, 볼린저 밴드 등 기술적 지표 분석
  * - AI가 제공하는 투자 조언 및 위험도 평가
  * - 매수/매도/홀드 신호 제공
+ * - AI 분석은 비용이 많이 드므로 긴 캐시 시간 적용
  */
 export function useTechnicalAnalysis(symbol: string) {
   return useQuery({
@@ -121,6 +150,10 @@ export function useTechnicalAnalysis(symbol: string) {
       return response.result_data;
     },
     enabled: !!symbol,
+    staleTime: 10 * 60 * 1000, // 10분간 fresh 상태 유지
+    gcTime: 30 * 60 * 1000, // 30분간 캐시 유지
+    retry: 1, // AI 분석은 재시도 횟수 제한
+    retryDelay: 5000,
   });
 }
 
@@ -133,7 +166,7 @@ export function useTechnicalAnalysis(symbol: string) {
  * - 다양한 시간대별 가격 예측 (1시간, 4시간, 24시간)
  * - 지지/저항선 분석
  * - 신뢰도 점수 및 시장 심리 분석
- * - 2분간 캐시되며 3회 재시도 지원
+ * - 예측 데이터는 자주 변경되지 않으므로 긴 캐시 시간 적용
  */
 export function usePricePrediction(symbol: string) {
   return useQuery({
@@ -145,9 +178,10 @@ export function usePricePrediction(symbol: string) {
       return response.result_data;
     },
     enabled: !!symbol,
-    retry: 3, // 재시도 횟수 증가
+    retry: 2, // 재시도 횟수
     retryDelay: 2000, // 재시도 간격
-    staleTime: 2 * 60 * 1000, // 2분간 캐시
+    staleTime: 5 * 60 * 1000, // 5분간 캐시
+    gcTime: 20 * 60 * 1000, // 20분간 캐시 유지
   });
 }
 
@@ -170,6 +204,8 @@ export function useCreatePrediction(symbol: string) {
     onSuccess: () => {
       // 성공 시 예측 목록을 다시 불러옴
     },
+    retry: 1, // 뮤테이션은 재시도 횟수 제한
+    retryDelay: 3000,
   });
 }
 
@@ -178,9 +214,10 @@ export function useCreatePrediction(symbol: string) {
  * @returns React Query 결과 객체 (코인 목록 포함)
  * 
  * 특징:
- * - 5분간 캐시됩니다
+ * - 10분간 캐시됩니다
  * - 거래소에서 지원하는 모든 코인 정보 제공
  * - 필터링 및 검색 기능 지원
+ * - 코인 목록은 자주 변경되지 않으므로 긴 캐시 시간 적용
  */
 export function useSymbols() {
   return useQuery({
@@ -189,7 +226,10 @@ export function useSymbols() {
       const response: any = await symbolsApi.getSymbols();
       return response.result_data;
     },
-    staleTime: 5 * 60 * 1000, // 5분간 캐시
+    staleTime: 10 * 60 * 1000, // 10분간 캐시
+    gcTime: 30 * 60 * 1000, // 30분간 캐시 유지
+    retry: 2,
+    retryDelay: 2000,
   });
 }
 
@@ -198,9 +238,10 @@ export function useSymbols() {
  * @returns React Query 결과 객체 (인기 코인 목록 포함)
  * 
  * 특징:
- * - 5분간 캐시됩니다
+ * - 10분간 캐시됩니다
  * - 거래량, 시가총액 등을 기준으로 선별된 인기 코인
  * - 대시보드 및 메인 페이지에서 사용
+ * - 인기 코인 목록은 상대적으로 안정적이므로 긴 캐시 시간 적용
  */
 export function usePopularSymbols() {
   return useQuery({
@@ -209,7 +250,10 @@ export function usePopularSymbols() {
       const response: any = await symbolsApi.getPopularSymbols();
       return response.result_data;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10분간 캐시
+    gcTime: 30 * 60 * 1000, // 30분간 캐시 유지
+    retry: 2,
+    retryDelay: 2000,
   });
 }
 
@@ -221,6 +265,7 @@ export function usePopularSymbols() {
  * - 5분간 캐시됩니다
  * - 최신 비트코인 관련 뉴스 및 시장 동향
  * - 대시보드에서 실시간 뉴스 피드 제공
+ * - 뉴스는 상대적으로 자주 업데이트되므로 적당한 캐시 시간 적용
  */
 export const useBitcoinNews = () => {
   return useQuery({
@@ -231,6 +276,8 @@ export const useBitcoinNews = () => {
     },
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
+    retry: 2,
+    retryDelay: 2000,
   });
 };
 
@@ -243,6 +290,7 @@ export const useBitcoinNews = () => {
  * - 페이지네이션 지원
  * - 뉴스 소스별 필터링 가능
  * - 5분간 캐시됩니다
+ * - 뉴스는 상대적으로 자주 업데이트되므로 적당한 캐시 시간 적용
  */
 export const useAllNews = (params?: { limit?: number; page?: number; source?: string }) => {
   return useQuery({
@@ -253,6 +301,8 @@ export const useAllNews = (params?: { limit?: number; page?: number; source?: st
     },
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
+    retry: 2,
+    retryDelay: 2000,
   });
 };
 
@@ -265,6 +315,7 @@ export const useAllNews = (params?: { limit?: number; page?: number; source?: st
  * - 검색어가 있을 때만 API를 호출합니다
  * - 5분간 캐시됩니다
  * - 실시간 검색 결과 제공
+ * - 검색 결과는 검색어에 따라 달라지므로 적당한 캐시 시간 적용
  */
 export const useNewsSearch = (params: { q: string; limit?: number; page?: number }) => {
   return useQuery({
@@ -276,5 +327,7 @@ export const useNewsSearch = (params: { q: string; limit?: number; page?: number
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
     enabled: !!params.q, // 검색어가 있을 때만 실행
+    retry: 2,
+    retryDelay: 2000,
   });
 };

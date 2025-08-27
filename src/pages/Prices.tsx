@@ -3,7 +3,7 @@ import { usePrice, usePopularSymbols, usePrices, useChartData, useMarketStats } 
 import { getKoreanCoinName } from '../utils/coinNames';
 import toast from 'react-hot-toast';
 
-export function Prices() {
+function Prices() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchedSymbol, setSearchedSymbol] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -993,3 +993,5 @@ export function Prices() {
     </div>
   );
 }
+
+export default Prices;

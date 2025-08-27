@@ -1,133 +1,176 @@
-import React from 'react';
-import { getKoreanCoinName } from '../../utils/coinNames';
+import React, { memo } from 'react';
+import type { PriceData } from '../../types/api';
 
 interface PriceCardProps {
-  symbol: string;
-  price: string;
-  change: string;
+  priceData: PriceData;
+  onClick?: () => void;
 }
 
-export function PriceCard({ symbol, price, change }: PriceCardProps) {
-  const isPositive = change.startsWith('+');
-  const isNegative = change.startsWith('-');
-  
-  const getCoinIcon = (symbol: string) => {
-    const coin = symbol.replace('USDT', '');
-    switch (coin) {
-      case 'BTC':
-        return '₿';
-      case 'ETH':
-        return 'Ξ';
-      case 'BNB':
-        return 'B';
-      case 'ADA':
-        return 'A';
-      case 'SOL':
-        return '◎';
-      case 'SHIB':
-        return '🐕';
-      case 'DOT':
-        return '●';
-      case 'LINK':
-        return '🔗';
-      case 'UNI':
-        return '🦄';
-      case 'MATIC':
-        return 'M';
-      default:
-        return coin.slice(0, 1);
+const PriceCard: React.FC<PriceCardProps> = memo(({ priceData, onClick }) => {
+  const formatPrice = (price: string) => {
+    const num = parseFloat(price);
+    if (num >= 1000) {
+      return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    } else if (num >= 1) {
+      return `$${num.toFixed(2)}`;
+    } else {
+      return `$${num.toFixed(4)}`;
     }
+  };
+
+  const getCoinIcon = (symbol: string) => {
+    const coinName = symbol.replace('USDT', '').toLowerCase();
+    const iconMap: { [key: string]: string } = {
+      btc: '₿',
+      eth: 'Ξ',
+      bnb: '🟡',
+      ada: '₳',
+      sol: '◎',
+      shib: '🐕',
+      dot: '●',
+      link: '🔗',
+      uni: '🦄',
+      matic: '💜',
+      etc: '⟠'
+    };
+    return iconMap[coinName] || symbol.slice(0, 1);
   };
 
   const getCoinName = (symbol: string) => {
-    const coin = symbol.replace('USDT', '');
-    switch (coin) {
-      case 'BTC':
-        return 'Bitcoin';
-      case 'ETH':
-        return 'Ethereum';
-      case 'BNB':
-        return 'Binance Coin';
-      case 'ADA':
-        return 'Cardano';
-      case 'SOL':
-        return 'Solana';
-      case 'SHIB':
-        return 'Shiba Inu';
-      case 'DOT':
-        return 'Polkadot';
-      case 'LINK':
-        return 'Chainlink';
-      case 'UNI':
-        return 'Uniswap';
-      case 'MATIC':
-        return 'Polygon';
-      default:
-        return coin;
-    }
-  };
-
-  const formatPrice = (price: string) => {
-    const numPrice = parseFloat(price);
-    if (isNaN(numPrice)) return '로딩 중...';
-    
-    if (numPrice >= 1000) {
-      return `$${numPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    } else if (numPrice >= 1) {
-      return `$${numPrice.toFixed(2)}`;
-    } else {
-      return `$${numPrice.toFixed(4)}`;
-    }
+    const coinName = symbol.replace('USDT', '').toLowerCase();
+    const nameMap: { [key: string]: string } = {
+      btc: 'Bitcoin',
+      eth: 'Ethereum',
+      bnb: 'Binance Coin',
+      ada: 'Cardano',
+      sol: 'Solana',
+      shib: 'Shiba Inu',
+      dot: 'Polkadot',
+      link: 'Chainlink',
+      uni: 'Uniswap',
+      matic: 'Polygon',
+      etc: 'Ethereum Classic'
+    };
+    return nameMap[coinName] || symbol.replace('USDT', '');
   };
 
   return (
-    <div className="group">
-      <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:border-purple-400/50 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
-              {getCoinIcon(symbol)}
+    <div 
+      style={{
+        position: 'relative',
+        background: 'var(--bg-card)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '1.5rem',
+        padding: '1.75rem',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        transition: 'all 0.5s',
+        cursor: onClick ? 'pointer' : 'default',
+        minHeight: '280px'
+      }}
+      onClick={onClick}
+    >
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05))',
+        borderRadius: '1.5rem',
+        opacity: 0,
+        transition: 'opacity 0.5s'
+      }}></div>
+      
+      <div style={{ position: 'relative', zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{
+              width: '4rem',
+              height: '4rem',
+              background: 'var(--gradient-secondary)',
+              borderRadius: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-inverse)',
+              fontWeight: 'bold',
+              fontSize: '1.5rem',
+              boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)'
+            }}>
+              {getCoinIcon(priceData.symbol)}
             </div>
             <div>
-              <h3 className="text-white font-semibold text-lg">{getCoinName(symbol)}</h3>
-              <p className="text-gray-400 text-sm">{symbol}</p>
+              <h3 style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '1.25rem', margin: 0 }}>
+                {getCoinName(priceData.symbol)}
+              </h3>
+              <p style={{ color: 'var(--text-tertiary)', fontSize: '0.875rem', fontWeight: '500', margin: 0 }}>
+                {priceData.symbol}
+              </p>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-white mb-1">
-              {formatPrice(price)}
+          <div style={{ textAlign: 'right', minWidth: '120px' }}>
+            <div style={{ 
+              fontSize: '1.75rem', 
+              fontWeight: '900', 
+              color: 'var(--text-primary)', 
+              marginBottom: '0.5rem',
+              lineHeight: '1.2'
+            }}>
+              {formatPrice(priceData.price)}
             </div>
-            <div className={`text-sm font-medium px-2 py-1 rounded-full ${
-              isPositive 
-                ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                : isNegative 
-                ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
-            }`}>
-              {isPositive ? '↗' : isNegative ? '↘' : '→'} {change}
+            <div style={{
+              fontSize: '0.875rem',
+              fontWeight: 'bold',
+              padding: '0.375rem 0.875rem',
+              borderRadius: '9999px',
+              background: priceData.change?.startsWith('+') 
+                ? 'rgba(34, 197, 94, 0.2)' 
+                : 'rgba(239, 68, 68, 0.2)',
+              color: priceData.change?.startsWith('+') 
+                ? 'var(--status-success)' 
+                : 'var(--status-error)',
+              border: `1px solid ${priceData.change?.startsWith('+') 
+                ? 'rgba(34, 197, 94, 0.3)' 
+                : 'rgba(239, 68, 68, 0.3)'}`,
+              display: 'inline-block',
+              minWidth: '70px',
+              textAlign: 'center'
+            }}>
+              {priceData.change || '+0.00%'}
             </div>
           </div>
         </div>
         
-        {/* 미니 차트 영역 */}
-        <div className="h-20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 flex items-center justify-center">
-          <div className="flex items-center space-x-1">
-            <div className="w-1 h-8 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
-            <div className="w-1 h-12 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
-            <div className="w-1 h-6 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
-            <div className="w-1 h-10 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
-            <div className="w-1 h-8 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
-            <div className="w-1 h-14 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
-            <div className="w-1 h-9 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"></div>
+        {/* 추가 메트릭스 */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          fontSize: '0.875rem',
+          padding: '0.75rem 0',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          marginTop: '1rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ 
+              width: '0.5rem', 
+              height: '0.5rem', 
+              background: 'var(--text-accent)', 
+              borderRadius: '50%',
+              boxShadow: '0 0 8px rgba(167, 139, 250, 0.5)'
+            }}></div>
+            <span style={{ color: 'var(--text-tertiary)', fontWeight: '500' }}>24h Vol</span>
           </div>
-        </div>
-        
-        {/* 추가 정보 */}
-        <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
-          <span>24h Volume</span>
-          <span className="text-purple-300">$1.2B</span>
+          <span style={{ 
+            color: 'var(--text-accent)', 
+            fontWeight: '600',
+            fontSize: '1rem'
+          }}>
+            {priceData.volume24h ? `$${priceData.volume24h}` : '$2.1B'}
+          </span>
         </div>
       </div>
     </div>
   );
-}
+});
+
+PriceCard.displayName = 'PriceCard';
+
+export default PriceCard;

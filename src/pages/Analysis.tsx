@@ -3,7 +3,7 @@ import { useTechnicalAnalysis, usePopularSymbols } from '../hooks/useApi';
 import { getKoreanCoinName } from '../utils/coinNames';
 import toast from 'react-hot-toast';
 
-export function Analysis() {
+function Analysis() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchedSymbol, setSearchedSymbol] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -518,3 +518,5 @@ export function Analysis() {
     </div>
   );
 }
+
+export default Analysis;

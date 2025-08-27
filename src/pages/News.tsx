@@ -19,7 +19,7 @@ interface NewsItem {
   translatedContent?: string;
 }
 
-export function News() {
+function News() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSource, setSelectedSource] = useState('');
@@ -661,3 +661,5 @@ export function News() {
     </div>
   );
 }
+
+export default News;

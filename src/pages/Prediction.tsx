@@ -3,7 +3,7 @@ import { usePricePrediction, useCreatePrediction, usePopularSymbols } from '../h
 import { getKoreanCoinName } from '../utils/coinNames';
 import toast from 'react-hot-toast';
 
-export function Prediction() {
+function Prediction() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchedSymbol, setSearchedSymbol] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -759,3 +759,5 @@ export function Prediction() {
     </div>
   );
 }
+
+export default Prediction;
