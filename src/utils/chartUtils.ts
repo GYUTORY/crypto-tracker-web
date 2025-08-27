@@ -108,21 +108,29 @@ export const formatTime = (timestamp: number, interval: string): string => {
 export const getChartColors = (theme: 'dark' | 'light') => {
   if (theme === 'dark') {
     return {
-      background: '#1a1a1a',
+      background: '#0f0f23', // 더 어두운 네이비 블루
+      chartBackground: '#1a1a2e', // 차트 영역 배경
       text: '#ffffff',
-      grid: '#333333',
-      upColor: '#26a69a',
-      downColor: '#ef5350',
-      border: '#444444',
+      textSecondary: '#a0a0a0',
+      grid: '#2a2a3e', // 더 부드러운 그리드
+      upColor: '#00d4aa', // 밝은 그린
+      downColor: '#ff6b6b', // 밝은 레드
+      border: '#3a3a4e',
+      accent: '#6366f1', // 보라색 액센트
+      volumeColor: '#3b82f6', // 파란색 거래량
     }
   } else {
     return {
       background: '#ffffff',
-      text: '#000000',
-      grid: '#f0f0f0',
-      upColor: '#26a69a',
-      downColor: '#ef5350',
-      border: '#e0e0e0',
+      chartBackground: '#f8fafc',
+      text: '#1e293b',
+      textSecondary: '#64748b',
+      grid: '#e2e8f0',
+      upColor: '#10b981',
+      downColor: '#ef4444',
+      border: '#cbd5e1',
+      accent: '#6366f1',
+      volumeColor: '#3b82f6',
     }
   }
 }
