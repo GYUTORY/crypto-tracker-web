@@ -71,7 +71,13 @@ export function Analysis() {
   };
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden' }}>
+    <div style={{ 
+      position: 'relative', 
+      overflow: 'hidden',
+      minHeight: '100vh',
+      background: 'var(--bg-primary)',
+      color: 'var(--text-primary)'
+    }}>
       {/* 배경 효과 */}
       <div style={{
         position: 'absolute',
@@ -96,18 +102,19 @@ export function Analysis() {
             <div style={{
               width: '0.5rem',
               height: '0.5rem',
-                              background: 'var(--status-success)',
+              background: '#10b981',
               borderRadius: '50%',
               animation: 'pulse 2s infinite'
             }}></div>
-            <span style={{ color: 'var(--status-success)', fontSize: '0.875rem', fontWeight: '500' }}>AI 분석 시스템 활성화</span>
+            <span style={{ color: '#10b981', fontSize: '0.875rem', fontWeight: '500' }}>AI 분석 시스템 활성화</span>
           </div>
           <h1 style={{
-            fontSize: '4rem',
+            fontSize: 'clamp(2rem, 5vw, 4rem)',
             fontWeight: '900',
-            background: 'var(--gradient-text)',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
             marginBottom: '1.5rem',
             lineHeight: '1.2'
           }}>
@@ -115,12 +122,12 @@ export function Analysis() {
           </h1>
           <p style={{ 
             fontSize: '1.25rem',
-            color: 'var(--text-tertiary)',
+            color: '#64748b',
             maxWidth: '48rem',
             margin: '0 auto',
             lineHeight: '1.6'
           }}>
-            최첨단 AI가 제공하는 실시간 암호화폐 기술적 분석으로 <span style={{ color: 'var(--text-accent)', fontWeight: '600' }}>스마트한 투자 결정</span>을 도와드립니다
+            최첨단 AI가 제공하는 실시간 암호화폐 기술적 분석으로 <span style={{ color: '#6366f1', fontWeight: '600' }}>스마트한 투자 결정</span>을 도와드립니다
           </p>
         </div>
 
@@ -130,7 +137,7 @@ export function Analysis() {
             <div style={{
               width: '3rem',
               height: '3rem',
-              background: 'var(--gradient-purple)',
+              background: 'linear-gradient(135deg, #8b5cf6, #a855f7)',
               borderRadius: '1rem',
               display: 'flex',
               alignItems: 'center',
@@ -140,8 +147,8 @@ export function Analysis() {
               <span style={{ fontSize: '1.5rem' }}>🤖</span>
             </div>
             <div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>코인 선택 및 분석</h2>
-              <p style={{ color: 'var(--text-tertiary)', margin: 0 }}>기술적 분석 및 매매 신호</p>
+              <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', fontWeight: 'bold', color: '#ffffff', margin: 0 }}>코인 선택 및 분석</h2>
+              <p style={{ color: '#64748b', margin: 0 }}>기술적 분석 및 매매 신호</p>
             </div>
           </div>
 
@@ -293,7 +300,7 @@ export function Analysis() {
                 disabled={isLoading}
                 style={{ 
                   padding: '1rem 2rem',
-                  background: 'var(--gradient-purple)',
+                  background: 'linear-gradient(135deg, #8b5cf6, #a855f7)',
                   color: 'white',
                   borderRadius: '1rem',
                   fontWeight: 'bold',
@@ -306,7 +313,8 @@ export function Analysis() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.5rem'
+                  gap: '0.5rem',
+                  boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)'
                 }}
               >
                 {isLoading ? (
@@ -347,7 +355,7 @@ export function Analysis() {
                     width: '60px',
                     height: '60px',
                     border: '4px solid rgba(139, 92, 246, 0.3)',
-                    borderTop: '4px solid var(--text-accent)',
+                    borderTop: '4px solid #6366f1',
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite',
                     margin: '0 auto 2rem'
@@ -355,7 +363,7 @@ export function Analysis() {
                   <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
                     AI 분석 중...
                   </h3>
-                  <p style={{ color: 'var(--text-tertiary)', fontSize: '1.125rem' }}>
+                  <p style={{ color: '#64748b', fontSize: '1.125rem' }}>
                     최첨단 AI가 {symbol}의 기술적 지표를 분석하고 있습니다
                   </p>
                 </div>
@@ -382,10 +390,10 @@ export function Analysis() {
                   }}>
                     <span style={{ fontSize: '2rem' }}>❌</span>
                   </div>
-                  <h3 style={{ color: 'var(--status-error)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                  <h3 style={{ color: '#ef4444', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
                     분석 오류
                   </h3>
-                  <p style={{ color: 'var(--status-error-light)', fontSize: '1.125rem' }}>
+                  <p style={{ color: '#fca5a5', fontSize: '1.125rem' }}>
                     코인 심볼을 확인하거나 잠시 후 다시 시도해주세요
                   </p>
                 </div>
@@ -406,7 +414,7 @@ export function Analysis() {
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'var(--gradient-success)',
+                        background: 'linear-gradient(135deg, #10b981, #059669)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -419,10 +427,10 @@ export function Analysis() {
                       <h3 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>
                         {symbol} 현재 가격
                       </h3>
-                      <div style={{ fontSize: '2.5rem', fontWeight: '900', color: 'var(--status-success)', marginBottom: '0.75rem' }}>
+                      <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#10b981', marginBottom: '0.75rem' }}>
                         ${price}
                       </div>
-                      <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>실시간 업데이트</p>
+                      <p style={{ color: '#64748b', fontSize: '1rem' }}>실시간 업데이트</p>
                     </div>
                   </div>
 
@@ -439,7 +447,7 @@ export function Analysis() {
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'var(--gradient-secondary)',
+                        background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -460,7 +468,7 @@ export function Analysis() {
                       }}>
                         {analysis?.simpleAdvice || 'N/A'}
                       </div>
-                      <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>AI 분석 결과</p>
+                      <p style={{ color: '#64748b', fontSize: '1rem' }}>AI 분석 결과</p>
                     </div>
                   </div>
 
@@ -477,7 +485,7 @@ export function Analysis() {
                       <div style={{
                         width: '4rem',
                         height: '4rem',
-                        background: 'var(--gradient-purple)',
+                        background: 'linear-gradient(135deg, #8b5cf6, #a855f7)',
                         borderRadius: '1rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -494,11 +502,11 @@ export function Analysis() {
                         fontSize: '2.5rem', 
                         fontWeight: '900', 
                         marginBottom: '0.75rem',
-                        color: analysis?.confidence >= 80 ? 'var(--status-success)' : analysis?.confidence >= 60 ? 'var(--status-warning)' : 'var(--status-error)'
+                        color: analysis?.confidence >= 80 ? '#10b981' : analysis?.confidence >= 60 ? '#f59e0b' : '#ef4444'
                       }}>
                         {analysis?.confidence || 'N/A'}%
                       </div>
-                      <p style={{ color: 'var(--text-tertiary)', fontSize: '1rem' }}>분석 정확도</p>
+                      <p style={{ color: '#64748b', fontSize: '1rem' }}>분석 정확도</p>
                     </div>
                   </div>
                 </div>
