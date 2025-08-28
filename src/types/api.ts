@@ -9,6 +9,36 @@ export interface ApiResponse<T> {
 }
 
 /**
+ * API 에러 응답 구조
+ * 에러가 발생했을 때의 응답 형태
+ */
+export interface ApiErrorResponse {
+  success: false
+  message: string
+  error: {
+    code: string
+    details?: string
+    timestamp: string
+  }
+}
+
+/**
+ * API 성공 응답 구조
+ * 성공적인 응답의 형태
+ */
+export interface ApiSuccessResponse<T> {
+  success: true
+  message: string
+  result_data: T
+}
+
+/**
+ * API 응답 래퍼 타입
+ * 성공 또는 실패를 구분할 수 있는 유니온 타입
+ */
+export type ApiResponseWrapper<T> = ApiSuccessResponse<T> | ApiErrorResponse;
+
+/**
  * 실시간 가격 데이터 구조
  * 바이낸스 API에서 제공하는 실시간 가격 정보
  */
@@ -136,6 +166,15 @@ export interface TradingSymbols {
 }
 
 /**
+ * 인기 코인 목록 구조
+ * 인기 코인 목록 API 응답
+ */
+export interface PopularSymbols {
+  popularSymbols: string[]; // 인기 코인 심볼 배열
+  total: number;            // 전체 인기 코인 수
+}
+
+/**
  * 뉴스 아이템 구조
  * 암호화폐 관련 뉴스 정보
  */
@@ -169,4 +208,63 @@ export interface NewsPaginationResponse {
   page: number;             // 현재 페이지
   limit: number;            // 페이지당 뉴스 수
   totalPages: number;       // 전체 페이지 수
+}
+
+/**
+ * 뉴스 검색 파라미터 구조
+ * 뉴스 검색 시 사용되는 파라미터
+ */
+export interface NewsSearchParams {
+  q: string;                // 검색어
+  limit?: number;           // 검색 결과 수 제한
+  page?: number;            // 페이지 번호
+}
+
+/**
+ * 뉴스 조회 파라미터 구조
+ * 뉴스 목록 조회 시 사용되는 파라미터
+ */
+export interface NewsQueryParams {
+  limit?: number;           // 조회할 뉴스 수
+  page?: number;            // 페이지 번호
+  source?: string;          // 뉴스 소스 필터
+}
+
+/**
+ * 기술적 분석 요청 파라미터 구조
+ * AI 기술적 분석 요청 시 사용되는 파라미터
+ */
+export interface TechnicalAnalysisParams {
+  symbol: string;           // 코인 심볼
+  price?: string;           // 현재 가격
+  technicalData?: {
+    rsi: number;
+    macd: number;
+    macdSignal: number;
+    bollingerUpper: string;
+    bollingerLower: string;
+    ma20: string;
+    ma50: string;
+    volume: string;
+    volumeChange: string;
+  };
+}
+
+/**
+ * 가격 예측 생성 파라미터 구조
+ * 새로운 가격 예측 생성 시 사용되는 파라미터
+ */
+export interface PredictionCreateParams {
+  symbol: string;           // 코인 심볼
+  timeframes?: string[];    // 예측할 시간대 배열
+  forceRefresh?: boolean;   // 강제 새로고침 여부
+}
+
+/**
+ * 코인 심볼 조회 파라미터 구조
+ * 코인 목록 조회 시 사용되는 파라미터
+ */
+export interface SymbolsQueryParams {
+  filter?: string;          // 필터링 조건
+  limit?: number;           // 조회할 코인 수 제한
 }
