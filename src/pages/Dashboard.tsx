@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { usePopularSymbols, usePrices, useBitcoinNews, useChartData, useMarketStats } from '../hooks/useApi';
+import type { PriceData, NewsItem, ChartDataPoint } from '../types/api';
 
-function Dashboard() {
+export default function Dashboard() {
   const navigate = useNavigate();
 
   // 실제 API 데이터 가져오기
@@ -197,7 +198,7 @@ function Dashboard() {
         ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
             {popularSymbols.map((symbol: string, index: number) => {
-              const priceData = pricesData?.prices?.find((p: any) => p.symbol === symbol);
+              const priceData = pricesData?.prices?.find((p: PriceData) => p.symbol === symbol);
               return (
                   <div key={symbol} style={{
                     position: 'relative',
@@ -345,12 +346,12 @@ function Dashboard() {
                             
                             if (chartData?.data && chartData.data.length > 0) {
                               // 실제 차트 데이터 사용
-                              const prices = chartData.data.map((point: any) => parseFloat(point.price));
+                              const prices = chartData.data.map((point: ChartDataPoint) => parseFloat(point.price));
                               const minPrice = Math.min(...prices);
                               const maxPrice = Math.max(...prices);
                               const priceRange = maxPrice - minPrice;
                               
-                              return chartData.data.slice(-10).map((point: any, i: number) => {
+                              return chartData.data.slice(-10).map((point: ChartDataPoint, i: number) => {
                                 const price = parseFloat(point.price);
                                 const height = priceRange > 0 
                                   ? ((price - minPrice) / priceRange) * 60 + 20
@@ -662,9 +663,9 @@ function Dashboard() {
                 </div>
               ))}
             </div>
-          ) : bitcoinNewsData?.news && bitcoinNewsData.news.length > 0 ? (
+          ) : bitcoinNewsData?.articles && bitcoinNewsData.articles.length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-              {bitcoinNewsData.news.slice(0, 3).map((news: any, index: number) => (
+              {bitcoinNewsData.articles.slice(0, 3).map((news: NewsItem, index: number) => (
                 <div key={`${news.id}-${index}`} style={{
                   position: 'relative',
                   background: 'var(--bg-card)',
@@ -833,5 +834,3 @@ function Dashboard() {
     </div>
   );
 }
-
-export default Dashboard;

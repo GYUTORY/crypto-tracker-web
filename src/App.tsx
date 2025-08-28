@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { lazy, Suspense, useEffect } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Header } from './components/layout/Header';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { initPerformanceMonitoring } from './utils/performance';
 import './index.css';
 import './styles/themes.css';
@@ -118,28 +119,30 @@ function App() {
             {/* 메인 콘텐츠 영역 */}
             <main>
               <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  {/* 대시보드 - 메인 페이지 */}
-                  <Route path="/" element={<Dashboard />} />
-                  
-                  {/* 가격 조회 - 실시간 가격 정보 */}
-                  <Route path="/prices" element={<Prices />} />
-                  
-                  {/* AI 분석 - 기술적 분석 및 투자 조언 */}
-                  <Route path="/analysis" element={<Analysis />} />
-                  
-                  {/* 가격 예측 - AI 기반 가격 예측 */}
-                  <Route path="/prediction" element={<Prediction />} />
-                  
-                  {/* 뉴스 - 암호화폐 관련 뉴스 */}
-                  <Route path="/news" element={<News />} />
-                  
-                  {/* 차트 - 상세 차트 분석 */}
-                  <Route path="/charts" element={<Charts />} />
-                  
-                  {/* AI 추천 - AI 기반 투자 추천 */}
-                  <Route path="/ai-recommendations" element={<AIRecommendations />} />
-                </Routes>
+                <ErrorBoundary>
+                  <Routes>
+                    {/* 대시보드 - 메인 페이지 */}
+                    <Route path="/" element={<Dashboard />} />
+                    
+                    {/* 가격 조회 - 실시간 가격 정보 */}
+                    <Route path="/prices" element={<Prices />} />
+                    
+                    {/* AI 분석 - 기술적 분석 및 투자 조언 */}
+                    <Route path="/analysis" element={<Analysis />} />
+                    
+                    {/* 가격 예측 - AI 기반 가격 예측 */}
+                    <Route path="/prediction" element={<Prediction />} />
+                    
+                    {/* 뉴스 - 암호화폐 관련 뉴스 */}
+                    <Route path="/news" element={<News />} />
+                    
+                    {/* 차트 - 상세 차트 분석 */}
+                    <Route path="/charts" element={<Charts />} />
+                    
+                    {/* AI 추천 - AI 기반 투자 추천 */}
+                    <Route path="/ai-recommendations" element={<AIRecommendations />} />
+                  </Routes>
+                </ErrorBoundary>
               </Suspense>
             </main>
             
