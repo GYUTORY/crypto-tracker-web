@@ -1,16 +1,22 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { priceApi, aiApi, predictionApi, symbolsApi, newsApi, marketApi } from '../services/api';
 import type { 
-  ApiResponse, 
+  ApiResponseWrapper,
   PriceData, 
   TechnicalAnalysis, 
   PricePrediction, 
   TradingSymbols, 
+  PopularSymbols,
   NewsItem,
   NewsResponse,
   NewsPaginationResponse,
+  NewsSearchParams,
+  NewsQueryParams,
   ChartData,
-  MarketStats
+  MarketStats,
+  TechnicalAnalysisParams,
+  PredictionCreateParams,
+  SymbolsQueryParams
 } from '../types/api';
 
 /**
@@ -19,6 +25,19 @@ import type {
  */
 const getRefetchInterval = (baseInterval: number) => {
   return document.visibilityState === 'visible' ? baseInterval : false;
+};
+
+/**
+ * API 응답에서 데이터를 안전하게 추출하는 유틸리티 함수
+ * @param response - API 응답
+ * @returns 추출된 데이터 또는 null
+ */
+const extractData = <T>(response: ApiResponseWrapper<T>): T | null => {
+  if (response.success) {
+    return response.result_data;
+  }
+  console.error('API Error:', response.message);
+  return null;
 };
 
 /**
@@ -35,9 +54,13 @@ const getRefetchInterval = (baseInterval: number) => {
 export function usePrice(symbol: string) {
   return useQuery({
     queryKey: ['price', symbol],
-    queryFn: async () => {
-      const response: any = await priceApi.getPrice(symbol);
-      return response.result_data;
+    queryFn: async (): Promise<PriceData> => {
+      const response = await priceApi.getPrice(symbol) as unknown as ApiResponseWrapper<PriceData>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error(`Failed to fetch price for ${symbol}`);
+      }
+      return data;
     },
     enabled: !!symbol,
     refetchInterval: getRefetchInterval(30000), // 30초마다 갱신 (페이지 활성화 시에만)
@@ -62,11 +85,17 @@ export function usePrice(symbol: string) {
 export function usePrices(symbols: string[]) {
   return useQuery({
     queryKey: ['prices', symbols],
-    queryFn: async () => {
-      const responses: any[] = await priceApi.getPrices(symbols);
-      return {
-        prices: responses.map((response: any) => response.result_data)
-      };
+    queryFn: async (): Promise<{ prices: PriceData[] }> => {
+      const responses = await priceApi.getPrices(symbols) as unknown as ApiResponseWrapper<PriceData>[];
+      const prices = responses
+        .map(response => extractData(response))
+        .filter((data): data is PriceData => data !== null);
+      
+      if (prices.length === 0) {
+        throw new Error('Failed to fetch any price data');
+      }
+      
+      return { prices };
     },
     enabled: symbols.length > 0,
     refetchInterval: getRefetchInterval(30000), // 30초마다 갱신 (페이지 활성화 시에만)
@@ -93,9 +122,13 @@ export function usePrices(symbols: string[]) {
 export function useChartData(symbol: string, timeframe: string = '1h', limit: number = 24) {
   return useQuery({
     queryKey: ['chart-data', symbol, timeframe, limit],
-    queryFn: async () => {
-      const response: any = await priceApi.getChartData(symbol, timeframe, limit);
-      return response.result_data;
+    queryFn: async (): Promise<ChartData> => {
+      const response = await priceApi.getChartData(symbol, timeframe, limit) as unknown as ApiResponseWrapper<ChartData>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error(`Failed to fetch chart data for ${symbol}`);
+      }
+      return data;
     },
     enabled: !!symbol,
     refetchInterval: getRefetchInterval(120000), // 2분마다 갱신 (페이지 활성화 시에만)
@@ -119,9 +152,13 @@ export function useChartData(symbol: string, timeframe: string = '1h', limit: nu
 export function useMarketStats() {
   return useQuery({
     queryKey: ['market-stats'],
-    queryFn: async () => {
-      const response: any = await marketApi.getMarketStats();
-      return response.result_data;
+    queryFn: async (): Promise<MarketStats> => {
+      const response = await marketApi.getMarketStats() as unknown as ApiResponseWrapper<MarketStats>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error('Failed to fetch market stats');
+      }
+      return data;
     },
     refetchInterval: getRefetchInterval(300000), // 5분마다 갱신 (페이지 활성화 시에만)
     staleTime: 2 * 60 * 1000, // 2분간 fresh 상태 유지
@@ -145,9 +182,13 @@ export function useMarketStats() {
 export function useTechnicalAnalysis(symbol: string) {
   return useQuery({
     queryKey: ['technical-analysis', symbol],
-    queryFn: async () => {
-      const response: any = await aiApi.getTechnicalAnalysis(symbol);
-      return response.result_data;
+    queryFn: async (): Promise<TechnicalAnalysis> => {
+      const response = await aiApi.getTechnicalAnalysis(symbol) as unknown as ApiResponseWrapper<TechnicalAnalysis>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error(`Failed to fetch technical analysis for ${symbol}`);
+      }
+      return data;
     },
     enabled: !!symbol,
     staleTime: 10 * 60 * 1000, // 10분간 fresh 상태 유지
@@ -171,11 +212,15 @@ export function useTechnicalAnalysis(symbol: string) {
 export function usePricePrediction(symbol: string) {
   return useQuery({
     queryKey: ['price-prediction', symbol],
-    queryFn: async () => {
+    queryFn: async (): Promise<PricePrediction> => {
       console.log('🔮 예측 API 호출:', symbol);
-      const response: any = await predictionApi.getPricePrediction(symbol);
+      const response = await predictionApi.getPricePrediction(symbol) as unknown as ApiResponseWrapper<PricePrediction>;
       console.log('🔮 예측 API 응답:', response);
-      return response.result_data;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error(`Failed to fetch price prediction for ${symbol}`);
+      }
+      return data;
     },
     enabled: !!symbol,
     retry: 2, // 재시도 횟수
@@ -197,9 +242,13 @@ export function usePricePrediction(symbol: string) {
  */
 export function useCreatePrediction(symbol: string) {
   return useMutation({
-    mutationFn: async () => {
-      const response: any = await predictionApi.createPricePrediction(symbol);
-      return response.result_data;
+    mutationFn: async (): Promise<PricePrediction> => {
+      const response = await predictionApi.createPricePrediction(symbol) as unknown as ApiResponseWrapper<PricePrediction>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error(`Failed to create price prediction for ${symbol}`);
+      }
+      return data;
     },
     onSuccess: () => {
       // 성공 시 예측 목록을 다시 불러옴
@@ -222,9 +271,13 @@ export function useCreatePrediction(symbol: string) {
 export function useSymbols() {
   return useQuery({
     queryKey: ['symbols'],
-    queryFn: async () => {
-      const response: any = await symbolsApi.getSymbols();
-      return response.result_data;
+    queryFn: async (): Promise<TradingSymbols> => {
+      const response = await symbolsApi.getSymbols() as unknown as ApiResponseWrapper<TradingSymbols>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error('Failed to fetch symbols');
+      }
+      return data;
     },
     staleTime: 10 * 60 * 1000, // 10분간 캐시
     gcTime: 30 * 60 * 1000, // 30분간 캐시 유지
@@ -246,9 +299,13 @@ export function useSymbols() {
 export function usePopularSymbols() {
   return useQuery({
     queryKey: ['popular-symbols'],
-    queryFn: async () => {
-      const response: any = await symbolsApi.getPopularSymbols();
-      return response.result_data;
+    queryFn: async (): Promise<PopularSymbols> => {
+      const response = await symbolsApi.getPopularSymbols() as unknown as ApiResponseWrapper<PopularSymbols>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error('Failed to fetch popular symbols');
+      }
+      return data;
     },
     staleTime: 10 * 60 * 1000, // 10분간 캐시
     gcTime: 30 * 60 * 1000, // 30분간 캐시 유지
@@ -270,9 +327,13 @@ export function usePopularSymbols() {
 export const useBitcoinNews = () => {
   return useQuery({
     queryKey: ['bitcoin-news'],
-    queryFn: async () => {
-      const response: any = await newsApi.getBitcoinNews();
-      return response.result_data;
+    queryFn: async (): Promise<NewsResponse> => {
+      const response = await newsApi.getBitcoinNews() as unknown as ApiResponseWrapper<NewsResponse>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error('Failed to fetch bitcoin news');
+      }
+      return data;
     },
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
@@ -292,12 +353,16 @@ export const useBitcoinNews = () => {
  * - 5분간 캐시됩니다
  * - 뉴스는 상대적으로 자주 업데이트되므로 적당한 캐시 시간 적용
  */
-export const useAllNews = (params?: { limit?: number; page?: number; source?: string }) => {
+export const useAllNews = (params?: NewsQueryParams) => {
   return useQuery({
     queryKey: ['all-news', params],
-    queryFn: async () => {
-      const response: any = await newsApi.getAllNews(params);
-      return response.result_data;
+    queryFn: async (): Promise<NewsPaginationResponse> => {
+      const response = await newsApi.getAllNews(params) as unknown as ApiResponseWrapper<NewsPaginationResponse>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error('Failed to fetch all news');
+      }
+      return data;
     },
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
@@ -317,12 +382,16 @@ export const useAllNews = (params?: { limit?: number; page?: number; source?: st
  * - 실시간 검색 결과 제공
  * - 검색 결과는 검색어에 따라 달라지므로 적당한 캐시 시간 적용
  */
-export const useNewsSearch = (params: { q: string; limit?: number; page?: number }) => {
+export const useNewsSearch = (params: NewsSearchParams) => {
   return useQuery({
     queryKey: ['news-search', params],
-    queryFn: async () => {
-      const response: any = await newsApi.searchNews(params);
-      return response.result_data;
+    queryFn: async (): Promise<NewsPaginationResponse> => {
+      const response = await newsApi.searchNews(params) as unknown as ApiResponseWrapper<NewsPaginationResponse>;
+      const data = extractData(response);
+      if (!data) {
+        throw new Error('Failed to search news');
+      }
+      return data;
     },
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
