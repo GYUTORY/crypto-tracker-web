@@ -1,9 +1,22 @@
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { usePopularSymbols, usePrices, useBitcoinNews, useChartData, useMarketStats } from '../hooks/useApi';
 import type { PriceData, NewsItem, ChartDataPoint } from '../types/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // 실제 API 데이터 가져오기
   const { data: popularSymbolsData, isLoading: isLoadingPopular } = usePopularSymbols();
@@ -30,6 +43,16 @@ export default function Dashboard() {
 
   // 시장 통계 가져오기
   const { data: marketStatsData } = useMarketStats();
+
+  // 디버깅을 위한 콘솔 로그
+  console.log('🔍 Dashboard Debug Info:', {
+    popularSymbols,
+    pricesData,
+    isLoadingPrices,
+    bitcoinNewsData,
+    isLoadingNews,
+    marketStatsData
+  });
 
   const handleNewsClick = (url: string) => {
     window.open(url, '_blank');
@@ -94,9 +117,15 @@ export default function Dashboard() {
         background: 'radial-gradient(circle at 50% 50%, rgba(120,119,198,0.1), transparent 50%)'
       }}></div>
       
-      <div style={{ position: 'relative', zIndex: 10, maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <div style={{ 
+        position: 'relative', 
+        zIndex: 10, 
+        maxWidth: '1200px', 
+        margin: '0 auto', 
+        padding: isMobile ? '1rem 0.5rem' : '2rem 1rem' 
+      }}>
         {/* 헤더 섹션 */}
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '2rem' : '4rem' }}>
           <div style={{ 
             display: 'inline-flex',
             alignItems: 'center',
@@ -104,9 +133,9 @@ export default function Dashboard() {
             background: 'rgba(255, 255, 255, 0.1)',
             backdropFilter: 'blur(20px)',
             borderRadius: '9999px',
-            padding: '0.75rem 1.5rem',
+            padding: isMobile ? '0.5rem 1rem' : '0.75rem 1.5rem',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            marginBottom: '2rem'
+            marginBottom: isMobile ? '1rem' : '2rem'
           }}>
             <div style={{
               width: '0.5rem',
@@ -115,54 +144,77 @@ export default function Dashboard() {
               borderRadius: '50%',
               animation: 'pulse 2s infinite'
             }}></div>
-            <span style={{ color: 'var(--status-success)', fontSize: '0.875rem', fontWeight: '500' }}>실시간 데이터 연결됨</span>
+            <span style={{ 
+              color: 'var(--status-success)', 
+              fontSize: isMobile ? '0.75rem' : '0.875rem', 
+              fontWeight: '500' 
+            }}>실시간 데이터 연결됨</span>
           </div>
           <h1 style={{
-            fontSize: '4rem',
+            fontSize: isMobile ? '2rem' : '4rem',
             fontWeight: '900',
             background: 'var(--gradient-text)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            marginBottom: '1.5rem',
+            marginBottom: isMobile ? '1rem' : '1.5rem',
             lineHeight: '1.2'
           }}>
             Crypto Tracker
-            <span style={{ display: 'block', fontSize: '2.5rem', color: 'var(--text-accent)', fontWeight: '300' }}>Pro</span>
+            <span style={{ 
+              display: 'block', 
+              fontSize: isMobile ? '1.5rem' : '2.5rem', 
+              color: 'var(--text-accent)', 
+              fontWeight: '300' 
+            }}>Pro</span>
           </h1>
           <p style={{ 
-            fontSize: '1.25rem',
+            fontSize: isMobile ? '1rem' : '1.25rem',
             color: 'var(--text-tertiary)',
             maxWidth: '48rem',
             margin: '0 auto',
-            lineHeight: '1.6'
+            lineHeight: '1.6',
+            padding: isMobile ? '0 1rem' : '0'
           }}>
             AI 기반 실시간 암호화폐 분석으로 <span style={{ color: 'var(--text-accent)', fontWeight: '600' }}>스마트한 투자 결정</span>을 내리세요
           </p>
       </div>
       
         {/* 실시간 가격 섹션 */}
-        <div style={{ marginBottom: '5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '3rem' }}>
+        <div style={{ marginBottom: isMobile ? '3rem' : '5rem' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between', 
+            marginBottom: isMobile ? '2rem' : '3rem',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? '1rem' : '0'
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{ 
-                width: '3rem',
-                height: '3rem',
+                width: isMobile ? '2.5rem' : '3rem',
+                height: isMobile ? '2.5rem' : '3rem',
                 background: 'var(--gradient-accent)',
-            borderRadius: '1rem',
+            borderRadius: isMobile ? '0.75rem' : '1rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 boxShadow: '0 4px 12px rgba(249, 115, 22, 0.3)'
               }}>
-                <span style={{ fontSize: '1.5rem' }}>🔥</span>
+                <span style={{ fontSize: isMobile ? '1.25rem' : '1.5rem' }}>🔥</span>
               </div>
               <div>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>실시간 가격</h2>
+                <h2 style={{ 
+                  fontSize: isMobile ? '1.75rem' : '2.5rem', 
+                  fontWeight: 'bold', 
+                  color: 'var(--text-primary)', 
+                  margin: 0 
+                }}>실시간 가격</h2>
                                   <p style={{ color: 'var(--text-tertiary)', margin: 0 }}>최신 시장 데이터</p>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {!isMobile && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{
                   width: '0.75rem',
                   height: '0.75rem',
@@ -170,24 +222,29 @@ export default function Dashboard() {
               borderRadius: '50%',
                   animation: 'pulse 2s infinite'
                 }}></div>
-                <span style={{ color: 'var(--status-success)', fontSize: '0.875rem', fontWeight: '500' }}>실시간</span>
+                  <span style={{ color: 'var(--status-success)', fontSize: '0.875rem', fontWeight: '500' }}>실시간</span>
+                </div>
+                <div style={{ width: '1px', height: '1.5rem', background: 'var(--border-primary)' }}></div>
+                <span style={{ color: 'var(--text-tertiary)', fontSize: '0.875rem' }}>24시간 모니터링</span>
               </div>
-              <div style={{ width: '1px', height: '1.5rem', background: 'var(--border-primary)' }}></div>
-              <span style={{ color: 'var(--text-tertiary)', fontSize: '0.875rem' }}>24시간 모니터링</span>
-            </div>
+            )}
           </div>
 
           {isLoadingPrices ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(320px, 1fr))', 
+              gap: isMobile ? '1rem' : '2rem' 
+            }}>
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} style={{
                   background: 'var(--bg-card)',
                   backdropFilter: 'blur(20px)',
                   borderRadius: '1.5rem',
-                  padding: '1.75rem',
+                  padding: isMobile ? '1.25rem' : '1.75rem',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   animation: 'pulse 2s infinite',
-                  minHeight: '280px'
+                  minHeight: isMobile ? '200px' : '280px'
                 }}>
                                   <div style={{ height: '1.5rem', background: 'var(--bg-card)', borderRadius: '0.5rem', marginBottom: '1rem' }}></div>
                 <div style={{ height: '3rem', background: 'var(--bg-card)', borderRadius: '0.5rem', marginBottom: '0.75rem' }}></div>
@@ -196,7 +253,11 @@ export default function Dashboard() {
               ))}
           </div>
         ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(320px, 1fr))', 
+              gap: isMobile ? '1rem' : '2rem' 
+            }}>
             {popularSymbols.map((symbol: string, index: number) => {
               const priceData = pricesData?.prices?.find((p: PriceData) => p.symbol === symbol);
               return (
@@ -205,11 +266,11 @@ export default function Dashboard() {
                     background: 'var(--bg-card)',
                     backdropFilter: 'blur(20px)',
                     borderRadius: '1.5rem',
-                    padding: '1.75rem',
+                    padding: isMobile ? '1.25rem' : '1.75rem',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     transition: 'all 0.5s',
                     cursor: 'pointer',
-                    minHeight: '280px'
+                    minHeight: isMobile ? '200px' : '280px'
                   }}>
                     <div style={{
                       position: 'absolute',
@@ -221,31 +282,51 @@ export default function Dashboard() {
                     }}></div>
                     
                     <div style={{ position: 'relative', zIndex: 10 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', 
+                        marginBottom: isMobile ? '1rem' : '1.5rem',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        gap: isMobile ? '0.75rem' : '0'
+                      }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                           <div style={{
-                            width: '4rem',
-                            height: '4rem',
+                            width: isMobile ? '3rem' : '4rem',
+                            height: isMobile ? '3rem' : '4rem',
                             background: 'var(--gradient-secondary)',
-                            borderRadius: '1rem',
+                            borderRadius: isMobile ? '0.75rem' : '1rem',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: 'var(--text-inverse)',
                             fontWeight: 'bold',
-                            fontSize: '1.5rem',
+                            fontSize: isMobile ? '1.25rem' : '1.5rem',
                             boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)'
                           }}>
                             {getCoinIcon(symbol)}
                           </div>
                           <div>
-                            <h3 style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '1.25rem', margin: 0 }}>{getCoinName(symbol)}</h3>
-                            <p style={{ color: 'var(--text-tertiary)', fontSize: '0.875rem', fontWeight: '500', margin: 0 }}>{symbol}</p>
+                            <h3 style={{ 
+                              color: 'var(--text-primary)', 
+                              fontWeight: 'bold', 
+                              fontSize: isMobile ? '1rem' : '1.25rem', 
+                              margin: 0 
+                            }}>{getCoinName(symbol)}</h3>
+                            <p style={{ 
+                              color: 'var(--text-tertiary)', 
+                              fontSize: isMobile ? '0.75rem' : '0.875rem', 
+                              fontWeight: '500', 
+                              margin: 0 
+                            }}>{symbol}</p>
                           </div>
                         </div>
-                        <div style={{ textAlign: 'right', minWidth: '120px' }}>
+                        <div style={{ 
+                          textAlign: isMobile ? 'center' : 'right', 
+                          minWidth: isMobile ? 'auto' : '120px' 
+                        }}>
                           <div style={{ 
-                            fontSize: '1.75rem', 
+                            fontSize: isMobile ? '1.5rem' : '1.75rem', 
                             fontWeight: '900', 
                             color: 'var(--text-primary)', 
                             marginBottom: '0.5rem',
@@ -254,9 +335,9 @@ export default function Dashboard() {
                             {formatPrice(priceData?.price || '0')}
                           </div>
                           <div style={{
-                            fontSize: '0.875rem',
+                            fontSize: isMobile ? '0.75rem' : '0.875rem',
                             fontWeight: 'bold',
-                            padding: '0.375rem 0.875rem',
+                            padding: isMobile ? '0.25rem 0.75rem' : '0.375rem 0.875rem',
                             borderRadius: '9999px',
                             background: priceData?.change?.startsWith('+') 
                               ? 'rgba(34, 197, 94, 0.2)' 
@@ -268,7 +349,7 @@ export default function Dashboard() {
                               ? 'rgba(34, 197, 94, 0.3)' 
                               : 'rgba(239, 68, 68, 0.3)'}`,
                             display: 'inline-block',
-                            minWidth: '70px',
+                            minWidth: isMobile ? '60px' : '70px',
                             textAlign: 'center'
                           }}>
                             {priceData?.change || '+0.00%'}
@@ -278,38 +359,40 @@ export default function Dashboard() {
                       
                       {/* 실제 차트 데이터 사용 */}
                       <div style={{
-                        height: '6rem',
+                        height: isMobile ? '4rem' : '6rem',
                         background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1))',
                         borderRadius: '1rem',
                         border: '1px solid rgba(139, 92, 246, 0.2)',
-                        padding: '0.75rem',
+                        padding: isMobile ? '0.5rem' : '0.75rem',
                         marginBottom: '1rem',
                         position: 'relative'
                       }}>
                         {/* Y축 라벨 */}
-                        <div style={{
-                          position: 'absolute',
-                          left: '0.5rem',
-                          top: '50%',
-                          transform: 'translateY(-50%) rotate(-90deg)',
-                          fontSize: '0.75rem',
-                          color: 'var(--text-tertiary)',
-                          fontWeight: '500',
-                          whiteSpace: 'nowrap'
-                        }}>
-                          가격 ($)
-                        </div>
+                        {!isMobile && (
+                          <div style={{
+                            position: 'absolute',
+                            left: '0.5rem',
+                            top: '50%',
+                            transform: 'translateY(-50%) rotate(-90deg)',
+                            fontSize: '0.75rem',
+                            color: 'var(--text-tertiary)',
+                            fontWeight: '500',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            가격 ($)
+                          </div>
+                        )}
                         
                         {/* 현재 가격 표시 */}
                         <div style={{
                           position: 'absolute',
                           top: '0.5rem',
                           right: '0.75rem',
-                          fontSize: '0.75rem',
+                          fontSize: isMobile ? '0.625rem' : '0.75rem',
                           color: 'var(--text-accent)',
                           fontWeight: '600',
                           background: 'rgba(167, 139, 250, 0.1)',
-                          padding: '0.25rem 0.5rem',
+                          padding: isMobile ? '0.125rem 0.375rem' : '0.25rem 0.5rem',
                           borderRadius: '0.5rem',
                           border: '1px solid rgba(167, 139, 250, 0.2)'
                         }}>
@@ -322,7 +405,7 @@ export default function Dashboard() {
                           bottom: '0.25rem',
                           left: '50%',
                           transform: 'translateX(-50%)',
-                          fontSize: '0.75rem',
+                          fontSize: isMobile ? '0.625rem' : '0.75rem',
                           color: 'var(--text-tertiary)',
                           fontWeight: '500'
                         }}>
@@ -334,9 +417,9 @@ export default function Dashboard() {
                           display: 'flex', 
                           alignItems: 'end', 
                           gap: '0.25rem', 
-                          height: '4rem',
-                          marginLeft: '2rem',
-                          marginBottom: '1.5rem'
+                          height: isMobile ? '2.5rem' : '4rem',
+                          marginLeft: isMobile ? '0' : '2rem',
+                          marginBottom: isMobile ? '1rem' : '1.5rem'
                         }}>
                           {(() => {
                             // 해당 코인의 차트 데이터 찾기
@@ -361,7 +444,7 @@ export default function Dashboard() {
                                   <div 
                                     key={i}
                                     style={{
-                                      width: '0.25rem',
+                                      width: isMobile ? '0.2rem' : '0.25rem',
                                       background: 'var(--gradient-secondary)',
                                       borderRadius: '9999px',
                                       transition: 'all 0.3s',
@@ -400,7 +483,7 @@ export default function Dashboard() {
                                    <div 
                                      key={i}
                                      style={{
-                                       width: '0.25rem',
+                                       width: isMobile ? '0.2rem' : '0.25rem',
                                        background: 'var(--gradient-secondary)',
                                        borderRadius: '9999px',
                                        transition: 'all 0.3s',
@@ -433,7 +516,7 @@ export default function Dashboard() {
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'space-between', 
-                        fontSize: '0.875rem',
+                        fontSize: isMobile ? '0.75rem' : '0.875rem',
                         padding: '0.75rem 0',
                         borderTop: '1px solid rgba(255, 255, 255, 0.1)',
                         marginTop: '1rem'
@@ -451,7 +534,7 @@ export default function Dashboard() {
                         <span style={{ 
                           color: 'var(--text-accent)', 
                           fontWeight: '600',
-                          fontSize: '1rem'
+                          fontSize: isMobile ? '0.875rem' : '1rem'
                         }}>
                           {priceData?.volume24h ? `$${priceData.volume24h}` : '$2.1B'}
                         </span>
@@ -663,9 +746,9 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-          ) : bitcoinNewsData?.articles && bitcoinNewsData.articles.length > 0 ? (
+          ) : bitcoinNewsData?.news && bitcoinNewsData.news.length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-              {bitcoinNewsData.articles.slice(0, 3).map((news: NewsItem, index: number) => (
+              {bitcoinNewsData.news.slice(0, 3).map((news: NewsItem, index: number) => (
                 <div key={`${news.id}-${index}`} style={{
                   position: 'relative',
                   background: 'var(--bg-card)',
