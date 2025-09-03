@@ -26,9 +26,32 @@ const getApiBaseUrl = () => {
   return 'http://localhost:3000';
 };
 
-const API_BASE_URL = getApiBaseUrl();
+/**
+ * Java 서버 API 기본 URL을 설정하는 함수
+ * AI 추천, 기술적 지표 등 성능 중심 API용
+ * 
+ * @returns Java API 기본 URL 문자열
+ */
+const getJavaApiBaseUrl = () => {
+  // 환경 변수가 있으면 사용, 없으면 동적으로 설정
+  const envUrl = import.meta.env.VITE_JAVA_API_BASE_URL;
+  if (envUrl) return envUrl;
+  
+  // 현재 호스트가 localhost가 아니면 같은 IP 사용 (모바일 접근용)
+  const currentHost = window.location.hostname;
+  if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+    return `http://${currentHost}:8080`;
+  }
+  
+  // 기본값 (Java 서버)
+  return 'http://localhost:8080';
+};
 
-console.log('🔗 API Base URL:', API_BASE_URL);
+const API_BASE_URL = getApiBaseUrl();
+const JAVA_API_BASE_URL = getJavaApiBaseUrl();
+
+console.log('🔗 Node.js API Base URL:', API_BASE_URL);
+console.log('🔗 Java API Base URL:', JAVA_API_BASE_URL);
 
 /**
  * Axios 인스턴스 생성
@@ -36,7 +59,19 @@ console.log('🔗 API Base URL:', API_BASE_URL);
  */
 export const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 60000, // 60초 타임아웃
+  timeout: 120000, // 120초 타임아웃 (2분)
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+/**
+ * Java 서버용 Axios 인스턴스 생성
+ * AI 추천, 기술적 지표 등 성능 중심 API용
+ */
+export const javaApi = axios.create({
+  baseURL: JAVA_API_BASE_URL,
+  timeout: 120000, // 120초 타임아웃 (2분)
   headers: {
     'Content-Type': 'application/json',
   },
@@ -63,18 +98,48 @@ api.interceptors.request.use(
  */
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ API Response:', response.config.url, response.data);
+    console.log('✅ Node.js API Response:', response.config.url, response.data);
     return response.data;
   },
   (error) => {
-    console.error('❌ API Error:', error.config?.url, error.message);
+    console.error('❌ Node.js API Error:', error.config?.url, error.message);
+    throw error;
+  }
+);
+
+/**
+ * Java 서버 요청 인터셉터
+ * 모든 Java API 요청에 대한 로깅 및 전처리를 수행합니다
+ */
+javaApi.interceptors.request.use(
+  (config) => {
+    console.log('🚀 Java API Request:', config.method?.toUpperCase(), config.url);
+    return config;
+  },
+  (error) => {
+    console.error('❌ Java Request Error:', error);
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Java 서버 응답 인터셉터
+ * 모든 Java API 응답에 대한 로깅 및 후처리를 수행합니다
+ */
+javaApi.interceptors.response.use(
+  (response) => {
+    console.log('✅ Java API Response:', response.config.url, response.data);
+    return response.data;
+  },
+  (error) => {
+    console.error('❌ Java API Error:', error.config?.url, error.message);
     throw error;
   }
 );
 
 /**
  * 가격 관련 API 함수들
- * 실시간 가격 조회 및 차트 데이터 제공
+ * 실시간 가격 조회 및 차트 데이터 제공 (Java 서버)
  */
 export const priceApi = {
   /**
@@ -83,7 +148,7 @@ export const priceApi = {
    * @returns Promise<PriceData> - 가격 데이터 객체
    */
   getPrice: (symbol: string) => {
-    return api.get(`/price/${symbol}`);
+    return javaApi.get(`/api/market/price/${symbol}`);
   },
   
   /**
@@ -93,7 +158,7 @@ export const priceApi = {
    */
   getPrices: (symbols: string[]) => {
     return Promise.all(
-      symbols.map(symbol => api.get(`/price/${symbol}`))
+      symbols.map(symbol => javaApi.get(`/api/market/price/${symbol}`))
     );
   },
 
@@ -105,13 +170,13 @@ export const priceApi = {
    * @returns Promise<ChartData> - 차트 데이터 객체
    */
   getChartData: (symbol: string, timeframe: string = '1h', limit: number = 24) => {
-    return api.get(`/price/${symbol}/chart?timeframe=${timeframe}&limit=${limit}`);
+    return javaApi.get(`/api/market/ohlcv/${symbol}?interval=${timeframe}&limit=${limit}`);
   },
 };
 
 /**
  * 시장 통계 관련 API 함수들
- * 전체 암호화폐 시장의 통계 정보 제공
+ * 전체 암호화폐 시장의 통계 정보 제공 (Java 서버)
  */
 export const marketApi = {
   /**
@@ -126,13 +191,55 @@ export const marketApi = {
    * - 공포탐욕 지수
    */
   getMarketStats: () => {
-    return api.get('/market/stats');
+    return javaApi.get('/api/market/stats');
+  },
+};
+
+/**
+ * 기술적 지표 관련 API 함수들
+ * RSI, MACD, 볼린저 밴드 등 기술적 분석 지표 제공 (Java 서버)
+ */
+export const technicalApi = {
+  /**
+   * RSI (상대강도지수)를 조회합니다
+   * @param symbol - 코인 심볼 (예: 'BTCUSDT')
+   * @returns Promise<TechnicalIndicator> - RSI 데이터
+   */
+  getRSI: (symbol: string) => {
+    return javaApi.get(`/api/technical/rsi/${symbol}`);
+  },
+  
+  /**
+   * MACD (이동평균수렴확산)를 조회합니다
+   * @param symbol - 코인 심볼 (예: 'BTCUSDT')
+   * @returns Promise<TechnicalIndicator> - MACD 데이터
+   */
+  getMACD: (symbol: string) => {
+    return javaApi.get(`/api/technical/macd/${symbol}`);
+  },
+  
+  /**
+   * 볼린저 밴드를 조회합니다
+   * @param symbol - 코인 심볼 (예: 'BTCUSDT')
+   * @returns Promise<TechnicalIndicator> - 볼린저 밴드 데이터
+   */
+  getBollingerBands: (symbol: string) => {
+    return javaApi.get(`/api/technical/bollinger/${symbol}`);
+  },
+  
+  /**
+   * 모든 기술적 지표를 조회합니다
+   * @param symbol - 코인 심볼 (예: 'BTCUSDT')
+   * @returns Promise<AllTechnicalIndicators> - 모든 기술적 지표 데이터
+   */
+  getAllIndicators: (symbol: string) => {
+    return javaApi.get(`/api/technical/all/${symbol}`);
   },
 };
 
 /**
  * AI 분석 관련 API 함수들
- * Google Gemini AI를 활용한 기술적 분석 제공
+ * Google Gemini AI를 활용한 기술적 분석 제공 (Node.js 서버 유지)
  */
 export const aiApi = {
   /**
@@ -234,7 +341,7 @@ export const symbolsApi = {
 
 /**
  * 뉴스 관련 API 함수들
- * 암호화폐 관련 뉴스 및 시장 동향 정보 제공
+ * 암호화폐 관련 뉴스 및 시장 동향 정보 제공 (Java 서버)
  */
 export const newsApi = {
   /**
@@ -242,7 +349,7 @@ export const newsApi = {
    * @returns Promise<NewsResponse> - 비트코인 뉴스 목록
    */
   getBitcoinNews: () => {
-    return api.get('/news/bitcoin');
+    return javaApi.get('/api/news/bitcoin');
   },
   
   /**
@@ -257,7 +364,7 @@ export const newsApi = {
     if (params?.source) queryParams.append('source', params.source);
     
     const queryString = queryParams.toString();
-    return api.get(`/news${queryString ? `?${queryString}` : ''}`);
+    return javaApi.get(`/api/news${queryString ? `?${queryString}` : ''}`);
   },
   
   /**
@@ -271,6 +378,210 @@ export const newsApi = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.page) queryParams.append('page', params.page.toString());
     
-    return api.get(`/news/search?${queryParams.toString()}`);
+    return javaApi.get(`/api/news/search?${queryParams.toString()}`);
   },
+};
+
+/**
+ * AI 추천 관련 API 함수들
+ * AI 기반 투자 추천 및 분석 제공 (Java 서버)
+ */
+export const aiRecommendationsApi = {
+  /**
+   * 단기 추천을 조회합니다 (1-7일)
+   * @returns Promise<AIRecommendations> - 단기 추천 데이터
+   */
+  getShortTermRecommendations: () => {
+    return javaApi.get('/api/recommendation/short-term');
+  },
+  
+  /**
+   * 중기 추천을 조회합니다 (1-4주)
+   * @returns Promise<AIRecommendations> - 중기 추천 데이터
+   */
+  getMediumTermRecommendations: () => {
+    return javaApi.get('/api/recommendation/medium-term');
+  },
+  
+  /**
+   * 장기 추천을 조회합니다 (1-12개월)
+   * @returns Promise<AIRecommendations> - 장기 추천 데이터
+   */
+  getLongTermRecommendations: () => {
+    return javaApi.get('/api/recommendation/long-term');
+  },
+  
+  /**
+   * 전체 추천을 조회합니다 (단기, 중기, 장기)
+   * @returns Promise<AllRecommendations> - 전체 추천 데이터
+   */
+  getAllRecommendations: () => {
+    return javaApi.get('/api/recommendation/all');
+  },
+};
+
+/**
+ * 서버 상태 확인 함수
+ * Node.js와 Java 서버의 상태를 확인합니다
+ */
+export const checkServerHealth = async () => {
+  try {
+    console.log('🔍 서버 상태 확인 중...');
+    
+    const nodeHealth = await fetch(`${API_BASE_URL}/health`);
+    const javaHealth = await fetch(`${JAVA_API_BASE_URL}/actuator/health`);
+    
+    const nodeStatus = nodeHealth.ok;
+    const javaStatus = javaHealth.ok;
+    
+    console.log('📊 서버 상태:', {
+      node: nodeStatus ? '✅ 정상' : '❌ 오류',
+      java: javaStatus ? '✅ 정상' : '❌ 오류'
+    });
+    
+    return {
+      node: nodeStatus,
+      java: javaStatus
+    };
+  } catch (error) {
+    console.error('❌ 서버 상태 확인 실패:', error);
+    return { node: false, java: false };
+  }
+};
+
+/**
+ * 안전한 API 호출 함수
+ * API 호출 실패 시 fallback 값을 반환합니다
+ */
+export const safeApiCall = async (apiCall: () => Promise<any>, fallback: any = null) => {
+  try {
+    return await apiCall();
+  } catch (error) {
+    console.error('❌ API 호출 실패:', error);
+    return fallback;
+  }
+};
+
+/**
+ * 마이그레이션 상태 확인 함수
+ * 하이브리드 아키텍처 전환 상태를 확인합니다
+ */
+export const checkMigrationStatus = async () => {
+  console.log('🔍 마이그레이션 상태 확인 중...');
+  
+  const status = {
+    nodeServer: false,
+    javaServer: false,
+    apis: {
+      price: 'java', // Java 서버로 마이그레이션 완료
+      market: 'java', // Java 서버로 마이그레이션 완료
+      news: 'java', // Java 서버로 마이그레이션 완료
+      technical: 'java', // Java 서버로 마이그레이션 완료
+      aiRecommendations: 'java', // Java 서버로 마이그레이션 완료
+      aiAnalysis: 'node', // Node.js 서버 유지
+      prediction: 'node', // Node.js 서버 유지
+      symbols: 'node', // Node.js 서버 유지
+      auth: 'node', // Node.js 서버 유지
+      notifications: 'node', // Node.js 서버 유지
+    },
+    websockets: {
+      price: 'java', // Java 서버로 마이그레이션 완료
+      ticker: 'java', // Java 서버로 마이그레이션 완료
+      kline: 'java', // Java 서버로 마이그레이션 완료
+      notifications: 'node', // Node.js 서버 유지
+      dashboard: 'node', // Node.js 서버 유지
+    }
+  };
+
+  try {
+    // 서버 상태 확인
+    const serverHealth = await checkServerHealth();
+    status.nodeServer = serverHealth.node;
+    status.javaServer = serverHealth.java;
+
+    console.log('📊 마이그레이션 상태:', status);
+    return status;
+  } catch (error) {
+    console.error('❌ 마이그레이션 상태 확인 실패:', error);
+    return status;
+  }
+};
+
+/**
+ * API 응답 시간 측정 함수
+ * @param apiCall - API 호출 함수
+ * @param apiName - API 이름
+ * @returns API 호출 결과
+ */
+export const measureApiResponseTime = async <T>(
+  apiCall: () => Promise<T>, 
+  apiName: string
+): Promise<T> => {
+  const startTime = performance.now();
+  try {
+    const result = await apiCall();
+    const endTime = performance.now();
+    const responseTime = endTime - startTime;
+    
+    console.log(`⏱️ ${apiName} 응답 시간: ${responseTime.toFixed(2)}ms`);
+    
+    // 성능 경고 (1초 이상)
+    if (responseTime > 1000) {
+      console.warn(`⚠️ ${apiName} 응답 시간이 느림: ${responseTime.toFixed(2)}ms`);
+    }
+    
+    return result;
+  } catch (error) {
+    const endTime = performance.now();
+    const responseTime = endTime - startTime;
+    console.error(`❌ ${apiName} 실패 (${responseTime.toFixed(2)}ms):`, error);
+    throw error;
+  }
+};
+
+/**
+ * WebSocket 연결 상태 모니터링 함수
+ * @param interval - 체크 간격 (밀리초, 기본값: 30초)
+ */
+export const monitorWebSocketHealth = (interval: number = 30000) => {
+  console.log('🔍 WebSocket 상태 모니터링 시작...');
+  
+  const checkInterval = setInterval(() => {
+    try {
+      // Node.js WebSocket 상태 확인
+      const nodeWebSocketClient = require('./nodeWebSocketClient').default;
+      const nodeStatus = nodeWebSocketClient.getConnectionStatus();
+      
+      // Java WebSocket 상태 확인
+      const javaWebSocketClient = require('./javaWebSocketClient').default;
+      const javaStatus = javaWebSocketClient.getConnectionStatus();
+      
+      console.log('📊 WebSocket 상태:', {
+        node: nodeStatus,
+        java: javaStatus
+      });
+      
+      // 연결 상태 이상 시 경고
+      Object.entries(nodeStatus).forEach(([type, isConnected]) => {
+        if (!isConnected) {
+          console.warn(`⚠️ Node.js ${type} WebSocket 연결 상태 이상`);
+        }
+      });
+      
+      Object.entries(javaStatus).forEach(([type, isConnected]) => {
+        if (!isConnected) {
+          console.warn(`⚠️ Java ${type} WebSocket 연결 상태 이상`);
+        }
+      });
+      
+    } catch (error) {
+      console.error('❌ WebSocket 상태 확인 실패:', error);
+    }
+  }, interval);
+  
+  // 모니터링 중지 함수 반환
+  return () => {
+    clearInterval(checkInterval);
+    console.log('🔍 WebSocket 상태 모니터링 중지됨');
+  };
 };

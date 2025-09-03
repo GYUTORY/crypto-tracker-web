@@ -3,9 +3,10 @@
  * 모든 API 응답은 이 구조를 따릅니다
  */
 export interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
+  result: boolean
+  msg: string
+  result_data: T
+  code: string
 }
 
 /**
@@ -13,13 +14,10 @@ export interface ApiResponse<T> {
  * 에러가 발생했을 때의 응답 형태
  */
 export interface ApiErrorResponse {
-  success: false
-  message: string
-  error: {
-    code: string
-    details?: string
-    timestamp: string
-  }
+  result: false
+  msg: string
+  code: string
+  result_data?: null
 }
 
 /**
@@ -27,9 +25,10 @@ export interface ApiErrorResponse {
  * 성공적인 응답의 형태
  */
 export interface ApiSuccessResponse<T> {
-  success: true
-  message: string
+  result: true
+  msg: string
   result_data: T
+  code: string
 }
 
 /**
@@ -194,8 +193,10 @@ export interface NewsItem {
  * 뉴스 API의 기본 응답 형태
  */
 export interface NewsResponse {
-  articles: NewsItem[];     // 뉴스 기사 배열
-  total: number;            // 전체 뉴스 수
+  news: NewsItem[];         // 뉴스 기사 배열
+  totalCount: number;       // 전체 뉴스 수
+  lastUpdated: string;      // 마지막 업데이트 시간
+  sources: string[];        // 뉴스 소스 목록
 }
 
 /**
@@ -203,11 +204,13 @@ export interface NewsResponse {
  * 페이지네이션이 포함된 뉴스 응답
  */
 export interface NewsPaginationResponse {
-  articles: NewsItem[];     // 뉴스 기사 배열
-  total: number;            // 전체 뉴스 수
+  news: NewsItem[];         // 뉴스 기사 배열
+  totalCount: number;       // 전체 뉴스 수
   page: number;             // 현재 페이지
   limit: number;            // 페이지당 뉴스 수
   totalPages: number;       // 전체 페이지 수
+  lastUpdated: string;      // 마지막 업데이트 시간
+  sources: string[];        // 뉴스 소스 목록
 }
 
 /**
@@ -267,4 +270,89 @@ export interface PredictionCreateParams {
 export interface SymbolsQueryParams {
   filter?: string;          // 필터링 조건
   limit?: number;           // 조회할 코인 수 제한
+}
+
+/**
+ * 추천 근거 타입
+ */
+export const RecommendationReason = {
+  TECHNICAL_BREAKOUT: 'technical_breakout',     // 기술적 돌파
+  FUNDAMENTAL_STRENGTH: 'fundamental_strength', // 기본적 강점
+  MARKET_SENTIMENT: 'market_sentiment',         // 시장 심리
+  VOLUME_SPIKE: 'volume_spike',                 // 거래량 급증
+  NEWS_POSITIVE: 'news_positive',               // 긍정적 뉴스
+  INSTITUTIONAL_INTEREST: 'institutional_interest', // 기관 투자 관심
+  ECOSYSTEM_GROWTH: 'ecosystem_growth',         // 생태계 성장
+  REGULATORY_CLARITY: 'regulatory_clarity',     // 규제 명확화
+  TECHNICAL_INNOVATION: 'technical_innovation', // 기술적 혁신
+  INSTITUTIONAL_ADOPTION: 'institutional_adoption', // 기관 채택
+  POSITIVE_MOMENTUM: 'positive_momentum',       // 긍정적 모멘텀
+  NEWS_SENTIMENT: 'news_sentiment',             // 뉴스 감정
+  LOW_VOLATILITY: 'low_volatility',             // 낮은 변동성
+  MARKET_CORRELATION: 'market_correlation',     // 시장 상관관계
+  HIGH_TRADING_VOLUME: 'high_trading_volume',   // 높은 거래량
+  RELATIVELY_LOW_RISK: 'relatively_low_risk',   // 상대적으로 낮은 위험
+  MARKET_DOMINANCE: 'market_dominance',         // 시장 지배력
+  MARKET_TREND: 'market_trend',                 // 시장 트렌드
+  STABLE_PERFORMANCE: 'stable_performance',     // 안정적 성과
+  ADOPTION: 'adoption',                         // 채택
+  REGULATION: 'regulation',                     // 규제
+  TECHNOLOGY: 'technology',                     // 기술
+  POTENTIAL_GROWTH: 'potential_growth',         // 성장 잠재력
+  MARKET_LEADER: 'market_leader',               // 시장 선두주자
+  HIGH_VOLUME: 'high_volume'                    // 높은 거래량
+} as const;
+
+export type RecommendationReasonType = typeof RecommendationReason[keyof typeof RecommendationReason];
+
+/**
+ * 추천 근거 상세 정보
+ */
+export interface RecommendationReasonDto {
+  type: RecommendationReasonType;
+  description: string;
+  confidence: number;
+}
+
+/**
+ * AI 추천 코인 데이터 구조
+ * AI가 제공하는 투자 추천 정보
+ */
+export interface AIRecommendation {
+  symbol: string;                    // 코인 심볼 (예: BTCUSDT)
+  name: string;                      // 코인 이름 (예: Bitcoin)
+  currentPrice: number;              // 현재 가격
+  change24h: number;                 // 24시간 변동률 (%)
+  expectedReturn: number;            // 예상 수익률 (%)
+  riskScore: number;                 // 위험도 점수 (1-10, 1이 가장 안전)
+  recommendationScore: number;       // 추천 점수 (0-100)
+  reasons: RecommendationReasonDto[]; // 추천 근거들
+  analysis: string;                  // AI 분석 요약
+  targetPrice: number;               // 목표 가격
+  stopLoss: number;                  // 손절가
+}
+
+/**
+ * AI 추천 목록 구조
+ * 특정 기간의 AI 추천 데이터
+ */
+export interface AIRecommendations {
+  timeframe: string;                   // 추천 기간 (short_term, medium_term, long_term)
+  timeframeDescription: string;        // 기간 설명 (단기 투자 (1-7일))
+  recommendations: AIRecommendation[]; // 추천 목록
+  generatedAt: string;                 // 생성 시간
+  modelInfo: string;                   // AI 모델 정보
+  marketAnalysis: string;              // 시장 분석 요약
+}
+
+/**
+ * 전체 추천 데이터 구조
+ * 단기, 중기, 장기 추천을 모두 포함
+ */
+export interface AllRecommendations {
+  shortTerm: AIRecommendations;        // 단기 추천
+  mediumTerm: AIRecommendations;       // 중기 추천
+  longTerm: AIRecommendations;         // 장기 추천
+  overallMarketStatus: string;         // 전체 시장 상태
+  generatedAt: string;                 // 생성 시간
 }

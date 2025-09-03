@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { priceApi, aiApi, predictionApi, symbolsApi, newsApi, marketApi } from '../services/api';
+import { priceApi, aiApi, predictionApi, symbolsApi, newsApi, marketApi, aiRecommendationsApi } from '../services/api';
 import type { 
   ApiResponseWrapper,
   PriceData, 
@@ -16,7 +16,10 @@ import type {
   MarketStats,
   TechnicalAnalysisParams,
   PredictionCreateParams,
-  SymbolsQueryParams
+  SymbolsQueryParams,
+  AIRecommendations,
+  AIRecommendation,
+  AllRecommendations
 } from '../types/api';
 
 /**
@@ -33,10 +36,24 @@ const getRefetchInterval = (baseInterval: number) => {
  * @returns 추출된 데이터 또는 null
  */
 const extractData = <T>(response: ApiResponseWrapper<T>): T | null => {
-  if (response.success) {
+  console.log('🔍 extractData 호출:', {
+    response,
+    hasResult: !!response.result,
+    hasResultData: !!response.result_data,
+    resultType: typeof response.result,
+    resultDataType: typeof response.result_data
+  });
+  
+  if (response.result) {
+    console.log('✅ 데이터 추출 성공:', response.result_data);
     return response.result_data;
   }
-  console.error('API Error:', response.message);
+  
+  console.error('❌ API Error:', {
+    message: response.msg,
+    code: response.code,
+    fullResponse: response
+  });
   return null;
 };
 
@@ -328,8 +345,11 @@ export const useBitcoinNews = () => {
   return useQuery({
     queryKey: ['bitcoin-news'],
     queryFn: async (): Promise<NewsResponse> => {
+      console.log('📰 뉴스 API 호출 시작');
       const response = await newsApi.getBitcoinNews() as unknown as ApiResponseWrapper<NewsResponse>;
+      console.log('📰 뉴스 API 응답:', response);
       const data = extractData(response);
+      console.log('📰 추출된 뉴스 데이터:', data);
       if (!data) {
         throw new Error('Failed to fetch bitcoin news');
       }
@@ -400,3 +420,158 @@ export const useNewsSearch = (params: NewsSearchParams) => {
     retryDelay: 2000,
   });
 };
+
+/**
+ * 단기 AI 추천을 조회하는 훅 (1-7일)
+ * @param enabled - 훅 활성화 여부 (기본값: true)
+ * @returns React Query 결과 객체 (단기 추천 데이터 포함)
+ * 
+ * 특징:
+ * - 한 번만 호출되고 캐시됨
+ * - 1-7일 단기 투자를 위한 TOP 3 추천
+ * - 기술적 돌파 및 단기 뉴스 이벤트 분석
+ */
+export const useShortTermRecommendations = (enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['short-term-recommendations'],
+    queryFn: async (): Promise<AIRecommendations> => {
+      console.log('🤖 단기 추천 API 호출');
+      const response = await aiRecommendationsApi.getShortTermRecommendations() as unknown as ApiResponseWrapper<AIRecommendations>;
+      console.log('🤖 단기 추천 API 응답:', response);
+      const data = extractData(response);
+      console.log('🤖 추출된 단기 추천 데이터:', data);
+      if (!data) {
+        throw new Error('Failed to fetch short-term recommendations');
+      }
+      return data;
+    },
+    enabled, // 활성화 여부 제어
+    staleTime: Infinity, // 데이터를 항상 fresh로 유지 (재호출 방지)
+    gcTime: Infinity, // 캐시를 영구적으로 유지
+    retry: 1, // 재시도 횟수 최소화
+    retryDelay: 1000, // 재시도 간격 단축
+    refetchOnWindowFocus: false, // 윈도우 포커스 시 재호출 방지
+    refetchOnMount: false, // 컴포넌트 마운트 시 재호출 방지
+    refetchOnReconnect: false, // 네트워크 재연결 시 재호출 방지
+    refetchInterval: false, // 자동 재호출 비활성화
+  });
+};
+
+/**
+ * 중기 AI 추천을 조회하는 훅 (1-4주)
+ * @param enabled - 훅 활성화 여부 (기본값: true)
+ * @returns React Query 결과 객체 (중기 추천 데이터 포함)
+ * 
+ * 특징:
+ * - 한 번만 호출되고 캐시됨
+ * - 1-4주 중기 투자를 위한 TOP 3 추천
+ * - 기본적 분석 및 시장 심리 분석
+ */
+export const useMediumTermRecommendations = (enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['medium-term-recommendations'],
+    queryFn: async (): Promise<AIRecommendations> => {
+      console.log('🤖 중기 추천 API 호출 시작');
+      try {
+        const response = await aiRecommendationsApi.getMediumTermRecommendations() as unknown as ApiResponseWrapper<AIRecommendations>;
+        console.log('🤖 중기 추천 API 응답:', response);
+        
+        const data = extractData(response);
+        console.log('🤖 추출된 중기 추천 데이터:', data);
+        
+        if (!data) {
+          console.error('❌ 중기 추천 데이터 추출 실패');
+          throw new Error('Failed to fetch medium-term recommendations');
+        }
+        
+        console.log('✅ 중기 추천 데이터 성공적으로 추출됨');
+        return data;
+      } catch (error) {
+        console.error('❌ 중기 추천 API 호출 중 오류:', error);
+        throw error;
+      }
+    },
+    enabled, // 활성화 여부 제어
+    staleTime: Infinity, // 데이터를 항상 fresh로 유지 (재호출 방지)
+    gcTime: Infinity, // 캐시를 영구적으로 유지
+    retry: 1, // 재시도 횟수 최소화
+    retryDelay: 1000, // 재시도 간격 단축
+    refetchOnWindowFocus: false, // 윈도우 포커스 시 재호출 방지
+    refetchOnMount: false, // 컴포넌트 마운트 시 재호출 방지
+    refetchOnReconnect: false, // 네트워크 재연결 시 재호출 방지
+    refetchInterval: false, // 자동 재호출 비활성화
+  });
+};
+
+/**
+ * 장기 AI 추천을 조회하는 훅 (1-12개월)
+ * @param enabled - 훅 활성화 여부 (기본값: true)
+ * @returns React Query 결과 객체 (장기 추천 데이터 포함)
+ * 
+ * 특징:
+ * - 한 번만 호출되고 캐시됨
+ * - 1-12개월 장기 투자를 위한 TOP 3 추천
+ * - 거시경제적 요소 및 규제 환경 분석
+ */
+export const useLongTermRecommendations = (enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['long-term-recommendations'],
+    queryFn: async (): Promise<AIRecommendations> => {
+      console.log('🤖 장기 추천 API 호출');
+      const response = await aiRecommendationsApi.getLongTermRecommendations() as unknown as ApiResponseWrapper<AIRecommendations>;
+      console.log('🤖 장기 추천 API 응답:', response);
+      const data = extractData(response);
+      console.log('🤖 추출된 장기 추천 데이터:', data);
+      if (!data) {
+        throw new Error('Failed to fetch long-term recommendations');
+      }
+      return data;
+    },
+    enabled, // 활성화 여부 제어
+    staleTime: Infinity, // 데이터를 항상 fresh로 유지 (재호출 방지)
+    gcTime: Infinity, // 캐시를 영구적으로 유지
+    retry: 1, // 재시도 횟수 최소화
+    retryDelay: 1000, // 재시도 간격 단축
+    refetchOnWindowFocus: false, // 윈도우 포커스 시 재호출 방지
+    refetchOnMount: false, // 컴포넌트 마운트 시 재호출 방지
+    refetchOnReconnect: false, // 네트워크 재연결 시 재호출 방지
+    refetchInterval: false, // 자동 재호출 비활성화
+  });
+};
+
+/**
+ * 전체 AI 추천을 조회하는 훅 (단기, 중기, 장기)
+ * @returns React Query 결과 객체 (전체 추천 데이터 포함)
+ * 
+ * 특징:
+ * - 10분간 캐시됩니다
+ * - 단기, 중기, 장기 추천을 모두 포함
+ * - 전체 시장 상태 분석 제공
+ * - 추천 데이터는 자주 변경되지 않으므로 긴 캐시 시간 적용
+ */
+export const useAllRecommendations = () => {
+  return useQuery({
+    queryKey: ['all-recommendations'],
+    queryFn: async (): Promise<AllRecommendations> => {
+      console.log('🤖 전체 추천 API 호출');
+      const response = await aiRecommendationsApi.getAllRecommendations() as unknown as ApiResponseWrapper<AllRecommendations>;
+      console.log('🤖 전체 추천 API 응답:', response);
+      const data = extractData(response);
+      console.log('🤖 추출된 전체 추천 데이터:', data);
+      if (!data) {
+        throw new Error('Failed to fetch all recommendations');
+      }
+      return data;
+    },
+    staleTime: Infinity, // 데이터를 항상 fresh로 유지 (재호출 방지)
+    gcTime: Infinity, // 캐시를 영구적으로 유지
+    retry: 1, // 재시도 횟수 최소화
+    retryDelay: 1000, // 재시도 간격 단축
+    refetchOnWindowFocus: false, // 윈도우 포커스 시 재호출 방지
+    refetchOnMount: false, // 컴포넌트 마운트 시 재호출 방지
+    refetchOnReconnect: false, // 네트워크 재연결 시 재호출 방지
+    refetchInterval: false, // 자동 재호출 비활성화
+  });
+};
+
+
