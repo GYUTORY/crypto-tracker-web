@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { lazy, Suspense, useEffect } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { Header } from './components/layout/Header';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { initPerformanceMonitoring } from './utils/performance';
-import './index.css';
+import { checkMigrationStatus, monitorWebSocketHealth } from './services/api';
+import './App.css';
 import './styles/themes.css';
 
 // 지연 로딩을 위한 페이지 컴포넌트들
@@ -63,13 +65,13 @@ const LoadingSpinner = () => (
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2,                    // 실패 시 2회 재시도 (성능 최적화)
+      retry: 1,                    // 실패 시 1회 재시도 (성능 최적화)
       retryDelay: 1000,            // 재시도 간격 1초
-      staleTime: 3 * 60 * 1000,    // 3분간 데이터를 fresh로 유지
-      gcTime: 10 * 60 * 1000,      // 10분간 캐시 유지
+      staleTime: 5 * 60 * 1000,    // 5분간 데이터를 fresh로 유지
+      gcTime: 15 * 60 * 1000,      // 15분간 캐시 유지
       refetchOnWindowFocus: false, // 윈도우 포커스 시 자동 재검증 비활성화
-      refetchOnReconnect: true,    // 네트워크 재연결 시 재검증 활성화
-      refetchOnMount: true,        // 컴포넌트 마운트 시 재검증 활성화
+      refetchOnReconnect: false,   // 네트워크 재연결 시 재검증 비활성화
+      refetchOnMount: false,       // 컴포넌트 마운트 시 재검증 비활성화
     },
     mutations: {
       retry: 1,                    // 뮤테이션 실패 시 1회 재시도
@@ -99,70 +101,70 @@ const queryClient = new QueryClient({
  * - /ai-recommendations: AI 추천 페이지
  */
 function App() {
+  // 성능 모니터링 초기화
   useEffect(() => {
     initPerformanceMonitoring();
+    
+    // 마이그레이션 상태 확인
+    checkMigrationStatus().then((status) => {
+      console.log('🚀 앱 시작 - 마이그레이션 상태:', status);
+      
+      if (!status.javaServer) {
+        console.warn('⚠️ Java 서버가 응답하지 않습니다. 일부 기능이 제한될 수 있습니다.');
+      }
+      
+      if (!status.nodeServer) {
+        console.warn('⚠️ Node.js 서버가 응답하지 않습니다. 일부 기능이 제한될 수 있습니다.');
+      }
+    });
+    
+    // WebSocket 상태 모니터링 시작
+    const stopMonitoring = monitorWebSocketHealth(30000); // 30초마다 체크
+    
+    // 컴포넌트 언마운트 시 모니터링 중지
+    return () => {
+      stopMonitoring();
+    };
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <BrowserRouter>
-          <div style={{
-            minHeight: '100vh',
-            background: 'var(--gradient-primary)',
-            color: 'var(--text-primary)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}>
-            {/* 네비게이션 헤더 */}
-            <Header />
-            
-            {/* 메인 콘텐츠 영역 */}
-            <main>
-              <Suspense fallback={<LoadingSpinner />}>
-                <ErrorBoundary>
+        <AuthProvider>
+          <Router>
+            <div style={{
+              minHeight: '100vh',
+              background: 'var(--bg-primary)',
+              color: 'var(--text-primary)',
+              fontFamily: 'var(--font-family)'
+            }}>
+              <ErrorBoundary>
+                <Header />
+                <Suspense fallback={<div>Loading...</div>}>
                   <Routes>
-                    {/* 대시보드 - 메인 페이지 */}
                     <Route path="/" element={<Dashboard />} />
-                    
-                    {/* 가격 조회 - 실시간 가격 정보 */}
                     <Route path="/prices" element={<Prices />} />
-                    
-                    {/* AI 분석 - 기술적 분석 및 투자 조언 */}
-                    <Route path="/analysis" element={<Analysis />} />
-                    
-                    {/* 가격 예측 - AI 기반 가격 예측 */}
-                    <Route path="/prediction" element={<Prediction />} />
-                    
-                    {/* 뉴스 - 암호화폐 관련 뉴스 */}
-                    <Route path="/news" element={<News />} />
-                    
-                    {/* 차트 - 상세 차트 분석 */}
                     <Route path="/charts" element={<Charts />} />
-                    
-                    {/* AI 추천 - AI 기반 투자 추천 */}
+                    <Route path="/news" element={<News />} />
+                    <Route path="/analysis" element={<Analysis />} />
+                    <Route path="/prediction" element={<Prediction />} />
                     <Route path="/ai-recommendations" element={<AIRecommendations />} />
                   </Routes>
-                </ErrorBoundary>
-              </Suspense>
-            </main>
-            
-            {/* 토스트 알림 시스템 */}
-            <Toaster 
-              position="top-right"
-              toastOptions={{
-                duration: 4000, // 4초간 표시
-                style: {
-                  background: 'var(--bg-card)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid var(--border-accent)',
-                  borderRadius: '12px',
-                  boxShadow: 'var(--shadow-lg)',
-                  color: 'var(--text-primary)',
-                },
-              }}
-            />
-          </div>
-        </BrowserRouter>
+                </Suspense>
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: 'var(--bg-secondary)',
+                      color: 'var(--text-primary)',
+                    },
+                  }}
+                />
+              </ErrorBoundary>
+            </div>
+          </Router>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

@@ -5,6 +5,13 @@
   text-align: center;
 }
 
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  #root {
+    padding: 1rem 0.5rem;
+  }
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -39,4 +46,40 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+  .card {
+    padding: 1em;
+  }
+  
+  /* 텍스트 크기 조정 */
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  h3 {
+    font-size: 1rem !important;
+  }
+  
+  p {
+    font-size: 0.875rem !important;
+  }
+  
+  /* 버튼 크기 조정 */
+  button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* 그리드 레이아웃 조정 */
+  .responsive-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
 }
