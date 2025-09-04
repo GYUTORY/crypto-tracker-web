@@ -4,7 +4,8 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import authManager, { UserData, LoginData, RegisterData } from '../services/authManager';
+import authManager from '../services/authManager';
+import type { UserData, LoginData, RegisterData } from '../types/auth';
 
 interface AuthContextType {
   // 상태

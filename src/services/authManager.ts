@@ -3,35 +3,7 @@
  * 사용자 로그인, 로그아웃, 토큰 관리 등을 담당
  */
 
-export interface UserData {
-  id: string;
-  email: string;
-  name: string;
-  nickname: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface AuthResponse {
-  success: boolean;
-  data: {
-    user: UserData;
-    token: string;
-  };
-  message?: string;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface RegisterData {
-  email: string;
-  name: string;
-  nickname: string;
-  password: string;
-}
+import type { UserData, AuthResponse, LoginData, RegisterData } from '../types/auth';
 
 class AuthManager {
   private token: string | null;
