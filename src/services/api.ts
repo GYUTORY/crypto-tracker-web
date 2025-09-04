@@ -26,32 +26,9 @@ const getApiBaseUrl = () => {
   return 'http://localhost:3000';
 };
 
-/**
- * Java 서버 API 기본 URL을 설정하는 함수
- * AI 추천, 기술적 지표 등 성능 중심 API용
- * 
- * @returns Java API 기본 URL 문자열
- */
-const getJavaApiBaseUrl = () => {
-  // 환경 변수가 있으면 사용, 없으면 동적으로 설정
-  const envUrl = import.meta.env.VITE_JAVA_API_BASE_URL;
-  if (envUrl) return envUrl;
-  
-  // 현재 호스트가 localhost가 아니면 같은 IP 사용 (모바일 접근용)
-  const currentHost = window.location.hostname;
-  if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
-    return `http://${currentHost}:8080`;
-  }
-  
-  // 기본값 (Java 서버)
-  return 'http://localhost:8080';
-};
-
 const API_BASE_URL = getApiBaseUrl();
-const JAVA_API_BASE_URL = getJavaApiBaseUrl();
 
 console.log('🔗 Node.js API Base URL:', API_BASE_URL);
-console.log('🔗 Java API Base URL:', JAVA_API_BASE_URL);
 
 /**
  * Axios 인스턴스 생성
@@ -65,17 +42,7 @@ export const api = axios.create({
   },
 });
 
-/**
- * Java 서버용 Axios 인스턴스 생성
- * AI 추천, 기술적 지표 등 성능 중심 API용
- */
-export const javaApi = axios.create({
-  baseURL: JAVA_API_BASE_URL,
-  timeout: 120000, // 120초 타임아웃 (2분)
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+
 
 /**
  * 요청 인터셉터
@@ -107,35 +74,7 @@ api.interceptors.response.use(
   }
 );
 
-/**
- * Java 서버 요청 인터셉터
- * 모든 Java API 요청에 대한 로깅 및 전처리를 수행합니다
- */
-javaApi.interceptors.request.use(
-  (config) => {
-    console.log('🚀 Java API Request:', config.method?.toUpperCase(), config.url);
-    return config;
-  },
-  (error) => {
-    console.error('❌ Java Request Error:', error);
-    return Promise.reject(error);
-  }
-);
 
-/**
- * Java 서버 응답 인터셉터
- * 모든 Java API 응답에 대한 로깅 및 후처리를 수행합니다
- */
-javaApi.interceptors.response.use(
-  (response) => {
-    console.log('✅ Java API Response:', response.config.url, response.data);
-    return response.data;
-  },
-  (error) => {
-    console.error('❌ Java API Error:', error.config?.url, error.message);
-    throw error;
-  }
-);
 
 /**
  * 가격 관련 API 함수들
@@ -148,7 +87,7 @@ export const priceApi = {
    * @returns Promise<PriceData> - 가격 데이터 객체
    */
   getPrice: (symbol: string) => {
-    return javaApi.get(`/api/market/price/${symbol}`);
+    return api.get(`/api/price/${symbol}`);
   },
   
   /**
@@ -158,7 +97,7 @@ export const priceApi = {
    */
   getPrices: (symbols: string[]) => {
     return Promise.all(
-      symbols.map(symbol => javaApi.get(`/api/market/price/${symbol}`))
+      symbols.map(symbol => api.get(`/api/price/${symbol}`))
     );
   },
 
@@ -170,7 +109,7 @@ export const priceApi = {
    * @returns Promise<ChartData> - 차트 데이터 객체
    */
   getChartData: (symbol: string, timeframe: string = '1h', limit: number = 24) => {
-    return javaApi.get(`/api/market/ohlcv/${symbol}?interval=${timeframe}&limit=${limit}`);
+    return api.get(`/api/chart/ohlcv/${symbol}?timeframe=${timeframe}&limit=${limit}`);
   },
 };
 
@@ -191,7 +130,7 @@ export const marketApi = {
    * - 공포탐욕 지수
    */
   getMarketStats: () => {
-    return javaApi.get('/api/market/stats');
+    return api.get('/api/market/summary');
   },
 };
 
@@ -206,16 +145,16 @@ export const technicalApi = {
    * @returns Promise<TechnicalIndicator> - RSI 데이터
    */
   getRSI: (symbol: string) => {
-    return javaApi.get(`/api/technical/rsi/${symbol}`);
+    return api.get(`/api/technical/rsi/${symbol}`);
   },
   
   /**
    * MACD (이동평균수렴확산)를 조회합니다
    * @param symbol - 코인 심볼 (예: 'BTCUSDT')
-   * @returns Promise<TechnicalIndicator> - MACD 데이터
+   * @returns Promise<TechnicalIndicator> - RSI 데이터
    */
   getMACD: (symbol: string) => {
-    return javaApi.get(`/api/technical/macd/${symbol}`);
+    return api.get(`/api/technical/macd/${symbol}`);
   },
   
   /**
@@ -224,7 +163,7 @@ export const technicalApi = {
    * @returns Promise<TechnicalIndicator> - 볼린저 밴드 데이터
    */
   getBollingerBands: (symbol: string) => {
-    return javaApi.get(`/api/technical/bollinger/${symbol}`);
+    return api.get(`/api/technical/bollinger-bands/${symbol}`);
   },
   
   /**
@@ -233,7 +172,7 @@ export const technicalApi = {
    * @returns Promise<AllTechnicalIndicators> - 모든 기술적 지표 데이터
    */
   getAllIndicators: (symbol: string) => {
-    return javaApi.get(`/api/technical/all/${symbol}`);
+    return api.get(`/api/technical/all/${symbol}`);
   },
 };
 
@@ -349,7 +288,7 @@ export const newsApi = {
    * @returns Promise<NewsResponse> - 비트코인 뉴스 목록
    */
   getBitcoinNews: () => {
-    return javaApi.get('/api/news/bitcoin');
+    return api.get('/api/news/symbol/BTCUSDT');
   },
   
   /**
@@ -364,7 +303,7 @@ export const newsApi = {
     if (params?.source) queryParams.append('source', params.source);
     
     const queryString = queryParams.toString();
-    return javaApi.get(`/api/news${queryString ? `?${queryString}` : ''}`);
+    return api.get(`/api/news/latest${queryString ? `?${queryString}` : ''}`);
   },
   
   /**
@@ -378,7 +317,7 @@ export const newsApi = {
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.page) queryParams.append('page', params.page.toString());
     
-    return javaApi.get(`/api/news/search?${queryParams.toString()}`);
+    return api.get(`/api/news/search?${queryParams.toString()}`);
   },
 };
 
@@ -392,7 +331,7 @@ export const aiRecommendationsApi = {
    * @returns Promise<AIRecommendations> - 단기 추천 데이터
    */
   getShortTermRecommendations: () => {
-    return javaApi.get('/api/recommendation/short-term');
+    return api.get('/api/recommendation/short-term');
   },
   
   /**
@@ -400,7 +339,7 @@ export const aiRecommendationsApi = {
    * @returns Promise<AIRecommendations> - 중기 추천 데이터
    */
   getMediumTermRecommendations: () => {
-    return javaApi.get('/api/recommendation/medium-term');
+    return api.get('/api/recommendation/medium-term');
   },
   
   /**
@@ -408,15 +347,15 @@ export const aiRecommendationsApi = {
    * @returns Promise<AIRecommendations> - 장기 추천 데이터
    */
   getLongTermRecommendations: () => {
-    return javaApi.get('/api/recommendation/long-term');
-  },
+    return api.get('/api/recommendation/long-term');
+   },
   
   /**
    * 전체 추천을 조회합니다 (단기, 중기, 장기)
    * @returns Promise<AllRecommendations> - 전체 추천 데이터
    */
   getAllRecommendations: () => {
-    return javaApi.get('/api/recommendation/all');
+    return api.get('/api/recommendation/all');
   },
 };
 
@@ -429,23 +368,23 @@ export const checkServerHealth = async () => {
     console.log('🔍 서버 상태 확인 중...');
     
     const nodeHealth = await fetch(`${API_BASE_URL}/health`);
-    const javaHealth = await fetch(`${JAVA_API_BASE_URL}/actuator/health`);
-    
     const nodeStatus = nodeHealth.ok;
-    const javaStatus = javaHealth.ok;
     
     console.log('📊 서버 상태:', {
-      node: nodeStatus ? '✅ 정상' : '❌ 오류',
-      java: javaStatus ? '✅ 정상' : '❌ 오류'
+      node: nodeStatus ? '✅ 정상' : '❌ 오류'
     });
     
     return {
       node: nodeStatus,
-      java: javaStatus
+      overall: nodeStatus
     };
   } catch (error) {
     console.error('❌ 서버 상태 확인 실패:', error);
-    return { node: false, java: false };
+    return { 
+      node: false, 
+      overall: false,
+      error: error instanceof Error ? error.message : '알 수 없는 오류'
+    };
   }
 };
 
@@ -473,11 +412,11 @@ export const checkMigrationStatus = async () => {
     nodeServer: false,
     javaServer: false,
     apis: {
-      price: 'java', // Java 서버로 마이그레이션 완료
-      market: 'java', // Java 서버로 마이그레이션 완료
-      news: 'java', // Java 서버로 마이그레이션 완료
-      technical: 'java', // Java 서버로 마이그레이션 완료
-      aiRecommendations: 'java', // Java 서버로 마이그레이션 완료
+      price: 'node', // Node.js 서버로 통합
+      market: 'node', // Node.js 서버로 통합
+      news: 'node', // Node.js 서버로 통합
+      technical: 'node', // Node.js 서버로 통합
+      aiRecommendations: 'node', // Node.js 서버로 통합
       aiAnalysis: 'node', // Node.js 서버 유지
       prediction: 'node', // Node.js 서버 유지
       symbols: 'node', // Node.js 서버 유지
@@ -485,9 +424,9 @@ export const checkMigrationStatus = async () => {
       notifications: 'node', // Node.js 서버 유지
     },
     websockets: {
-      price: 'java', // Java 서버로 마이그레이션 완료
-      ticker: 'java', // Java 서버로 마이그레이션 완료
-      kline: 'java', // Java 서버로 마이그레이션 완료
+      price: 'node', // Node.js 서버로 통합
+      ticker: 'node', // Node.js 서버로 통합
+      kline: 'node', // Node.js 서버로 통합
       notifications: 'node', // Node.js 서버 유지
       dashboard: 'node', // Node.js 서버 유지
     }
@@ -497,7 +436,7 @@ export const checkMigrationStatus = async () => {
     // 서버 상태 확인
     const serverHealth = await checkServerHealth();
     status.nodeServer = serverHealth.node;
-    status.javaServer = serverHealth.java;
+    status.javaServer = false; // Java 서버는 더 이상 사용하지 않음
 
     console.log('📊 마이그레이션 상태:', status);
     return status;
