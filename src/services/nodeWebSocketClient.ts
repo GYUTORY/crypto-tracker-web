@@ -1,167 +1,335 @@
 /**
  * Node.js WebSocket 클라이언트
- * 사용자 관련 기능 (알림, 대시보드 등)을 위한 WebSocket 연결 관리
+ * 실시간 가격 데이터, 차트 데이터, 알림 등을 처리
  */
 
+export interface WebSocketMessage {
+  type: string;
+  channel?: string;
+  symbols?: string[];
+  symbol?: string;
+  timeframe?: string;
+  data?: any;
+}
+
+export interface PriceUpdate {
+  type: 'price_update';
+  data: {
+    symbol: string;
+    price: string;
+    change24h: string;
+    timestamp: number;
+  };
+}
+
+export interface ChartUpdate {
+  type: 'chart_update';
+  data: {
+    symbol: string;
+    timeframe: string;
+    candle: {
+      timestamp: number;
+      open: string;
+      high: string;
+      low: string;
+      close: string;
+      volume: string;
+    };
+  };
+}
+
+export interface NotificationUpdate {
+  type: 'notification';
+  data: {
+    id: string;
+    type: 'price' | 'news' | 'system';
+    title: string;
+    message: string;
+    timestamp: number;
+  };
+}
+
+export type WebSocketData = PriceUpdate | ChartUpdate | NotificationUpdate;
+
 class NodeWebSocketClient {
+  private ws: WebSocket | null = null;
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 5;
+  private reconnectDelay = 1000;
+  private isConnecting = false;
+  private subscriptions = new Set<string>();
+  private messageHandlers = new Map<string, (data: any) => void>();
   private baseUrl: string;
-  private connections: Map<string, WebSocket>;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_NODE_WS_BASE_URL || 'ws://localhost:3000';
-    this.connections = new Map();
+    this.baseUrl = import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:3000/ws';
   }
 
   /**
-   * 알림 WebSocket 연결
-   * @param userId - 사용자 ID
-   * @returns WebSocket 인스턴스
+   * WebSocket 연결
    */
-  connectToNotifications(userId: string): WebSocket {
-    const url = `${this.baseUrl}/ws/notifications/${userId}`;
-    const ws = new WebSocket(url);
-    
-    ws.onopen = () => {
-      console.log('✅ Node.js 알림 WebSocket 연결됨');
-    };
-    
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        this.handleNotificationMessage(data);
-      } catch (error) {
-        console.error('❌ 알림 메시지 파싱 실패:', error);
+  connect(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        resolve();
+        return;
       }
-    };
-    
-    ws.onerror = (error) => {
-      console.error('❌ Node.js 알림 WebSocket 에러:', error);
-    };
-    
-    ws.onclose = () => {
-      console.log('🔌 Node.js 알림 WebSocket 연결 종료');
-      // 재연결 로직
-      setTimeout(() => this.connectToNotifications(userId), 5000);
-    };
-    
-    this.connections.set('notifications', ws);
-    return ws;
-  }
 
-  /**
-   * 대시보드 업데이트 WebSocket 연결
-   * @param userId - 사용자 ID
-   * @returns WebSocket 인스턴스
-   */
-  connectToDashboard(userId: string): WebSocket {
-    const url = `${this.baseUrl}/ws/dashboard/${userId}`;
-    const ws = new WebSocket(url);
-    
-    ws.onopen = () => {
-      console.log('✅ Node.js 대시보드 WebSocket 연결됨');
-    };
-    
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        this.handleDashboardMessage(data);
-      } catch (error) {
-        console.error('❌ 대시보드 메시지 파싱 실패:', error);
+      if (this.isConnecting) {
+        reject(new Error('이미 연결 중입니다'));
+        return;
       }
-    };
-    
-    ws.onerror = (error) => {
-      console.error('❌ Node.js 대시보드 WebSocket 에러:', error);
-    };
-    
-    ws.onclose = () => {
-      console.log('🔌 Node.js 대시보드 WebSocket 연결 종료');
-    };
-    
-    this.connections.set('dashboard', ws);
-    return ws;
-  }
 
-  /**
-   * 알림 메시지 처리
-   * @param data - 메시지 데이터
-   */
-  private handleNotificationMessage(data: any): void {
-    switch (data.type) {
-      case 'NEW_NOTIFICATION':
-        console.log('📢 새 알림:', data.message);
-        // 새 알림 표시 로직
-        break;
-      case 'PRICE_ALERT':
-        console.log('💰 가격 알림:', data.message);
-        // 가격 알림 표시 로직
-        break;
-      case 'SYSTEM_UPDATE':
-        console.log('🔄 시스템 업데이트:', data.message);
-        // 시스템 업데이트 처리
-        break;
-      default:
-        console.log('❓ 알 수 없는 알림 타입:', data.type);
-    }
-  }
+      this.isConnecting = true;
+      console.log('🔌 WebSocket 연결 시도:', this.baseUrl);
 
-  /**
-   * 대시보드 메시지 처리
-   * @param data - 메시지 데이터
-   */
-  private handleDashboardMessage(data: any): void {
-    switch (data.type) {
-      case 'WATCHLIST_UPDATE':
-        console.log('📊 관심목록 업데이트:', data.data);
-        // 관심목록 업데이트 처리
-        break;
-      case 'USER_PREFERENCE_UPDATE':
-        console.log('⚙️ 사용자 설정 업데이트:', data.data);
-        // 사용자 설정 업데이트 처리
-        break;
-      case 'DASHBOARD_REFRESH':
-        console.log('🔄 대시보드 새로고침 요청');
-        // 대시보드 새로고침 처리
-        break;
-      default:
-        console.log('❓ 알 수 없는 대시보드 타입:', data.type);
-    }
-  }
+      try {
+        this.ws = new WebSocket(this.baseUrl);
 
-  /**
-   * 특정 WebSocket 연결 해제
-   * @param type - 연결 타입 ('notifications', 'dashboard')
-   */
-  disconnect(type: string): void {
-    const connection = this.connections.get(type);
-    if (connection) {
-      connection.close();
-      this.connections.delete(type);
-      console.log(`🔌 ${type} WebSocket 연결 해제됨`);
-    }
-  }
+        this.ws.onopen = () => {
+          console.log('✅ WebSocket 연결 성공');
+          this.isConnecting = false;
+          this.reconnectAttempts = 0;
+          
+          // 이전 구독 복원
+          this.restoreSubscriptions();
+          resolve();
+        };
 
-  /**
-   * 모든 WebSocket 연결 해제
-   */
-  disconnectAll(): void {
-    this.connections.forEach((connection, type) => {
-      connection.close();
-      console.log(`🔌 ${type} WebSocket 연결 해제됨`);
+        this.ws.onmessage = (event) => {
+          try {
+            const message: WebSocketData = JSON.parse(event.data);
+            this.handleMessage(message);
+          } catch (error) {
+            console.error('❌ WebSocket 메시지 파싱 실패:', error);
+          }
+        };
+
+        this.ws.onclose = (event) => {
+          console.log('🔌 WebSocket 연결 종료:', event.code, event.reason);
+          this.isConnecting = false;
+          
+          if (!event.wasClean) {
+            this.handleReconnect();
+          }
+        };
+
+        this.ws.onerror = (error) => {
+          console.error('❌ WebSocket 에러:', error);
+          this.isConnecting = false;
+          reject(error);
+        };
+
+      } catch (error) {
+        this.isConnecting = false;
+        reject(error);
+      }
     });
-    this.connections.clear();
+  }
+
+  /**
+   * 연결 해제
+   */
+  disconnect(): void {
+    if (this.ws) {
+      console.log('🔌 WebSocket 연결 해제');
+      this.ws.close(1000, '사용자 요청');
+      this.ws = null;
+    }
+  }
+
+  /**
+   * 가격 데이터 구독
+   */
+  subscribeToPrice(symbols: string[]): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      console.warn('⚠️ WebSocket이 연결되지 않았습니다');
+      return;
+    }
+
+    const message: WebSocketMessage = {
+      type: 'subscribe',
+      channel: 'price',
+      symbols
+    };
+
+    this.ws.send(JSON.stringify(message));
+    
+    // 구독 상태 저장
+    symbols.forEach(symbol => {
+      this.subscriptions.add(`price:${symbol}`);
+    });
+
+    console.log('📊 가격 데이터 구독:', symbols);
+  }
+
+  /**
+   * 차트 데이터 구독
+   */
+  subscribeToChart(symbol: string, timeframe: string): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      console.warn('⚠️ WebSocket이 연결되지 않았습니다');
+      return;
+    }
+
+    const message: WebSocketMessage = {
+      type: 'subscribe',
+      channel: 'chart',
+      symbol,
+      timeframe
+    };
+
+    this.ws.send(JSON.stringify(message));
+    
+    // 구독 상태 저장
+    this.subscriptions.add(`chart:${symbol}:${timeframe}`);
+    console.log('📈 차트 데이터 구독:', symbol, timeframe);
+  }
+
+  /**
+   * 알림 구독
+   */
+  subscribeToNotifications(): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      console.warn('⚠️ WebSocket이 연결되지 않았습니다');
+      return;
+    }
+
+    const message: WebSocketMessage = {
+      type: 'subscribe',
+      channel: 'notifications'
+    };
+
+    this.ws.send(JSON.stringify(message));
+    
+    // 구독 상태 저장
+    this.subscriptions.add('notifications');
+    console.log('🔔 알림 구독');
+  }
+
+  /**
+   * 구독 해제
+   */
+  unsubscribe(channel: string, symbol?: string, timeframe?: string): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    const message: WebSocketMessage = {
+      type: 'unsubscribe',
+      channel,
+      symbol,
+      timeframe
+    };
+
+    this.ws.send(JSON.stringify(message));
+    
+    // 구독 상태 제거
+    if (channel === 'price' && symbol) {
+      this.subscriptions.delete(`price:${symbol}`);
+    } else if (channel === 'chart' && symbol && timeframe) {
+      this.subscriptions.delete(`chart:${symbol}:${timeframe}`);
+    } else if (channel === 'notifications') {
+      this.subscriptions.delete('notifications');
+    }
+
+    console.log('❌ 구독 해제:', channel, symbol, timeframe);
+  }
+
+  /**
+   * 메시지 핸들러 등록
+   */
+  onMessage(type: string, handler: (data: any) => void): void {
+    this.messageHandlers.set(type, handler);
+  }
+
+  /**
+   * 메시지 핸들러 제거
+   */
+  offMessage(type: string): void {
+    this.messageHandlers.delete(type);
+  }
+
+  /**
+   * 메시지 처리
+   */
+  private handleMessage(message: WebSocketData): void {
+    const handler = this.messageHandlers.get(message.type);
+    if (handler) {
+      handler(message.data);
+    } else {
+      console.log('📨 수신된 메시지:', message);
+    }
+  }
+
+  /**
+   * 재연결 처리
+   */
+  private handleReconnect(): void {
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.error('❌ 최대 재연결 시도 횟수 초과');
+      return;
+    }
+
+    this.reconnectAttempts++;
+    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+    
+    console.log(`🔄 ${delay}ms 후 재연결 시도 (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+    
+    setTimeout(() => {
+      this.connect().catch(error => {
+        console.error('❌ 재연결 실패:', error);
+      });
+    }, delay);
+  }
+
+  /**
+   * 구독 복원
+   */
+  private restoreSubscriptions(): void {
+    if (this.subscriptions.size === 0) return;
+
+    console.log('🔄 구독 복원 중...');
+    
+    this.subscriptions.forEach(subscription => {
+      const [channel, symbol, timeframe] = subscription.split(':');
+      
+      if (channel === 'price') {
+        this.subscribeToPrice([symbol]);
+      } else if (channel === 'chart') {
+        this.subscribeToChart(symbol, timeframe);
+      } else if (channel === 'notifications') {
+        this.subscribeToNotifications();
+      }
+    });
   }
 
   /**
    * 연결 상태 확인
-   * @returns 연결 상태 객체
    */
-  getConnectionStatus(): Record<string, boolean> {
-    const status: Record<string, boolean> = {};
-    this.connections.forEach((connection, type) => {
-      status[type] = connection.readyState === WebSocket.OPEN;
-    });
-    return status;
+  isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+
+  /**
+   * 구독 상태 확인
+   */
+  isSubscribed(channel: string, symbol?: string, timeframe?: string): boolean {
+    if (channel === 'price' && symbol) {
+      return this.subscriptions.has(`price:${symbol}`);
+    } else if (channel === 'chart' && symbol && timeframe) {
+      return this.subscriptions.has(`chart:${symbol}:${timeframe}`);
+    } else if (channel === 'notifications') {
+      return this.subscriptions.has('notifications');
+    }
+    return false;
+  }
+
+  /**
+   * 구독 목록 조회
+   */
+  getSubscriptions(): string[] {
+    return Array.from(this.subscriptions);
   }
 }
 
