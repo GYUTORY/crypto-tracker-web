@@ -1,16 +1,19 @@
-# 🚀 Crypto Tracker Pro - Frontend
+# 🚀 Crypto YG Trader
 
-Crypto Tracker Pro API를 활용한 실시간 암호화폐 가격 추적 및 AI 분석 웹 애플리케이션입니다.
+A comprehensive cryptocurrency trading platform featuring real-time price tracking, AI-powered analysis, and advanced trading tools. Built with modern web technologies to provide traders with professional-grade market insights and trading capabilities.
 
-## 🌟 주요 기능
+## 🌟 Key Features
 
-- **실시간 가격 모니터링**: 바이낸스 API를 통한 실시간 암호화폐 가격 추적
-- **AI 기반 기술적 분석**: Google Gemini AI를 활용한 기술적 분석 및 투자 조언
-- **가격 예측**: 다양한 시간대별 가격 예측 및 지지/저항선 분석
-- **코인 목록 관리**: 거래 가능한 모든 코인 목록 및 검색 기능
-- **WebSocket 실시간 스트리밍**: 실시간 가격 업데이트
+- **Real-time Price Monitoring**: Live cryptocurrency price tracking via Binance API
+- **AI-Powered Technical Analysis**: Advanced technical analysis and investment recommendations using Google Gemini AI
+- **Price Prediction**: Multi-timeframe price predictions with support/resistance analysis
+- **Coin Portfolio Management**: Comprehensive list of tradeable cryptocurrencies with search functionality
+- **WebSocket Real-time Streaming**: Instant price updates and market data
+- **Advanced Charting**: Professional-grade trading charts with technical indicators
+- **Market Sentiment Analysis**: AI-driven market sentiment and trend analysis
+- **Portfolio Tracking**: Real-time portfolio performance monitoring
 
-## 🛠 기술 스택
+## 🛠 Tech Stack
 
 - **Frontend**: React 18 + TypeScript
 - **Build Tool**: Vite
@@ -18,34 +21,36 @@ Crypto Tracker Pro API를 활용한 실시간 암호화폐 가격 추적 및 AI 
 - **State Management**: Zustand + React Query
 - **Routing**: React Router
 - **UI Components**: Headless UI + Heroicons
-- **Charts**: Chart.js + Recharts
+- **Charts**: Chart.js + Recharts + Lightweight Charts
 - **Real-time**: Socket.io-client
 - **HTTP Client**: Axios
+- **Animation**: Framer Motion
+- **Notifications**: React Hot Toast
 
-## 🚀 시작하기
+## 🚀 Getting Started
 
-### 1. 의존성 설치
+### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 2. 환경 변수 설정
+### 2. Environment Variables
 
-`.env.local` 파일을 생성하고 다음 내용을 추가하세요:
+Create a `.env.local` file and add the following content:
 
 ```env
 VITE_API_BASE_URL=http://localhost:3000
 VITE_WS_URL=ws://localhost:3000
 ```
 
-### 3. 개발 서버 실행
+### 3. Run Development Server
 
 ```bash
 npm run dev
 ```
 
-브라우저에서 `http://localhost:5173`으로 접속하세요.
+Open your browser and navigate to `http://localhost:5173`.
 
 ## 📁 프로젝트 구조
 

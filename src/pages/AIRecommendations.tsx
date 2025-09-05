@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useShortTermRecommendations, useMediumTermRecommendations, useLongTermRecommendations } from '../hooks/useApi';
 import { useQueryClient } from '@tanstack/react-query';
-import { checkServerHealth, safeApiCall } from '../services/api';
+import { checkServerHealth } from '../services/api';
 import type { AIRecommendation } from '../types/api';
 
 /**
@@ -41,259 +41,11 @@ const AIRecommendations: React.FC = () => {
   
   const { data: recommendationsData, isLoading, error } = currentQuery;
 
-  // 타임프레임별 더미 데이터 (API 호출 문제 우회용)
-  const getDummyData = (timeframe: 'short' | 'medium' | 'long'): any => {
-    switch (timeframe) {
-      case 'short':
-        return {
-          timeframe: "short_term",
-          timeframeDescription: "단기 투자 (1-7일)",
-          recommendations: [
-            {
-              symbol: "ETHUSDT",
-              name: "Ethereum",
-              currentPrice: 4448.54,
-              change24h: 3.46,
-              expectedReturn: 5,
-              riskScore: 4,
-              recommendationScore: 75,
-              reasons: [
-                {
-                  type: "positive_momentum" as any,
-                  description: "24시간 상승률 3.46%, 상대적으로 높은 거래량",
-                  confidence: 70
-                },
-                {
-                  type: "news_sentiment" as any,
-                  description: "긍정적인 시장 뉴스(Bitcoin 1백만 달러 도달 전망 등)의 영향",
-                  confidence: 60
-                }
-              ],
-              analysis: "긍정적인 모멘텀과 시장 뉴스의 영향으로 단기 상승 가능성이 높지만, RSI가 중립 수준이므로 과열 가능성도 고려해야 함.",
-              targetPrice: 4676,
-              stopLoss: 4200
-            },
-            {
-              symbol: "BNBUSDT",
-              name: "Binance Coin",
-              currentPrice: 863.71,
-              change24h: 0.67,
-              expectedReturn: 3,
-              riskScore: 1,
-              recommendationScore: 65,
-              reasons: [
-                {
-                  type: "low_volatility" as any,
-                  description: "상대적으로 낮은 변동성",
-                  confidence: 70
-                },
-                {
-                  type: "market_correlation" as any,
-                  description: "BTC 및 ETH와의 양의 상관관계",
-                  confidence: 50
-                }
-              ],
-              analysis: "낮은 변동성과 주요 코인과의 양의 상관관계로 안정적인 단기 투자 가능성. 상승폭은 제한적일 수 있음.",
-              targetPrice: 890,
-              stopLoss: 840
-            },
-            {
-              symbol: "ADAUSDT",
-              name: "Cardano",
-              currentPrice: 0.8344,
-              change24h: 1.35,
-              expectedReturn: 4,
-              riskScore: 2,
-              recommendationScore: 60,
-              reasons: [
-                {
-                  type: "positive_momentum" as any,
-                  description: "24시간 상승률 1.35%, 높은 거래량",
-                  confidence: 60
-                }
-              ],
-              analysis: "높은 거래량과 긍정적 모멘텀을 보이고 있으나, 시장의 전반적인 불확실성 때문에 상승폭은 제한적일 수 있음.",
-              targetPrice: 0.87,
-              stopLoss: 0.8
-            }
-          ],
-          generatedAt: new Date().toISOString(),
-          modelInfo: "Gemini 1.5 Pro - Real-time Technical Analysis & Market Sentiment",
-          marketAnalysis: "단기 시장은 기술적 돌파와 뉴스 이벤트에 민감하게 반응하고 있습니다."
-        };
-      
-      case 'long':
-        return {
-          timeframe: "long_term",
-          timeframeDescription: "장기 투자 (1-12개월)",
-          recommendations: [
-            {
-              symbol: "ETHUSDT",
-              name: "Ethereum",
-              currentPrice: 4450.24,
-              change24h: 3.14,
-              expectedReturn: 30,
-              riskScore: 6,
-              recommendationScore: 85,
-              reasons: [
-                {
-                  type: "fundamental_strength" as any,
-                  description: "강력한 생태계와 확장성 개선 노력",
-                  confidence: 90
-                },
-                {
-                  type: "adoption" as any,
-                  description: "DeFi 및 NFT 시장의 지속적인 성장",
-                  confidence: 80
-                }
-              ],
-              analysis: "강력한 생태계와 지속적인 기술 혁신으로 장기 성장 가능성이 높음. DeFi 및 NFT 시장 성장의 핵심 수혜자.",
-              targetPrice: 5785.31,
-              stopLoss: 4000
-            },
-            {
-              symbol: "ADAUSDT",
-              name: "Cardano",
-              currentPrice: 0.8342,
-              change24h: 1.29,
-              expectedReturn: 25,
-              riskScore: 5,
-              recommendationScore: 78,
-              reasons: [
-                {
-                  type: "fundamental_strength" as any,
-                  description: "학술적 접근과 검증된 기술",
-                  confidence: 85
-                },
-                {
-                  type: "regulation" as any,
-                  description: "규제 친화적인 접근 방식",
-                  confidence: 75
-                }
-              ],
-              analysis: "학술적 접근과 규제 친화적 특성으로 장기 성장 가능성 높음. 지속적인 생태계 확장 기대.",
-              targetPrice: 1.04,
-              stopLoss: 0.75
-            },
-            {
-              symbol: "SOLUSDT",
-              name: "Solana",
-              currentPrice: 205.48,
-              change24h: 1.22,
-              expectedReturn: 20,
-              riskScore: 7,
-              recommendationScore: 72,
-              reasons: [
-                {
-                  type: "technology" as any,
-                  description: "고속 처리량과 확장성",
-                  confidence: 80
-                },
-                {
-                  type: "adoption" as any,
-                  description: "DeFi 및 NFT 생태계의 성장",
-                  confidence: 70
-                }
-              ],
-              analysis: "고속 처리량과 확장성을 바탕으로 DeFi 및 NFT 생태계에서 경쟁력을 유지할 것으로 예상. 그러나 시장 경쟁 심화 및 기술적 리스크 고려 필요.",
-              targetPrice: 246.58,
-              stopLoss: 185
-            }
-          ],
-          generatedAt: new Date().toISOString(),
-          modelInfo: "Gemini 1.5 Pro - Real-time Fundamental & Ecosystem Analysis",
-          marketAnalysis: "장기 시장은 생태계 성장과 기술 혁신이 핵심 동력입니다."
-        };
-      
-      default: // medium
-        return {
-          timeframe: "medium_term",
-          timeframeDescription: "중기 투자 (1-4주)",
-          recommendations: [
-            {
-              symbol: "ETHUSDT",
-              name: "Ethereum",
-              currentPrice: 4448.29,
-              change24h: 3.2,
-              expectedReturn: 15,
-              riskScore: 5,
-              recommendationScore: 80,
-              reasons: [
-                {
-                  type: "market_sentiment" as any,
-                  description: "긍정적인 시장 분위기 및 높은 거래량",
-                  confidence: 80
-                },
-                {
-                  type: "ecosystem_growth" as any,
-                  description: "DeFi 생태계 지속적인 성장 및 확장",
-                  confidence: 90
-                }
-              ],
-              analysis: "높은 거래량과 긍정적 시장 분위기, DeFi 생태계 성장으로 중장기 성장 기대",
-              targetPrice: 5115,
-              stopLoss: 4000
-            },
-            {
-              symbol: "SOLUSDT",
-              name: "Solana",
-              currentPrice: 205.35,
-              change24h: 1.1,
-              expectedReturn: 18,
-              riskScore: 6,
-              recommendationScore: 75,
-              reasons: [
-                {
-                  type: "high_volume" as any,
-                  description: "높은 거래량으로 시장 관심 집중",
-                  confidence: 95
-                },
-                {
-                  type: "ecosystem_growth" as any,
-                  description: "활발한 생태계 성장 및 개발",
-                  confidence: 85
-                }
-              ],
-              analysis: "높은 거래량과 활발한 생태계 성장으로 중기적 성장 가능성 높음",
-              targetPrice: 242,
-              stopLoss: 185
-            },
-            {
-              symbol: "BTCUSDT",
-              name: "Bitcoin",
-              currentPrice: 109249.07,
-              change24h: 1.27,
-              expectedReturn: 10,
-              riskScore: 3,
-              recommendationScore: 78,
-              reasons: [
-                {
-                  type: "market_leader" as any,
-                  description: "시장 선두주자로서의 안정성",
-                  confidence: 90
-                },
-                {
-                  type: "news_sentiment" as any,
-                  description: "긍정적인 뉴스와 기관 투자자들의 관심",
-                  confidence: 70
-                }
-              ],
-              analysis: "시장 지배력 유지 및 긍정적 뉴스로 안정적인 중기 성장 예상",
-              targetPrice: 120000,
-              stopLoss: 105000
-            }
-          ],
-          generatedAt: new Date().toISOString(),
-          modelInfo: "Gemini 1.5 Pro - Real-time Fundamental & Technical Analysis",
-          marketAnalysis: "중기 시장은 기본적 요인과 기술적 트렌드의 조합으로 움직입니다."
-        };
-    }
-  };
 
-  // 선택된 타임프레임에 따른 더미 데이터 사용 (API 데이터가 없을 때만)
-  const finalData = recommendationsData || getDummyData(selectedTimeframe);
-  const finalIsLoading = isLoading; // 실제 로딩 상태 사용
-  const finalError = error; // 실제 에러 상태 사용
+  // API 데이터만 사용
+  const finalData = recommendationsData;
+  const finalIsLoading = isLoading;
+  const finalError = error;
 
   // 타임프레임 변경 핸들러 (메모이제이션으로 불필요한 리렌더링 방지)
   const handleTimeframeChange = useCallback((timeframe: 'short' | 'medium' | 'long') => {
@@ -313,8 +65,8 @@ const AIRecommendations: React.FC = () => {
     // 서버 상태 확인
     checkServerHealth().then((status) => {
       console.log('🔍 서버 상태 확인 완료:', status);
-      if (!status.java) {
-        console.warn('⚠️ Java 서버가 응답하지 않습니다. 더미 데이터를 사용합니다.');
+      if (!status.node) {
+        console.warn('⚠️ Node.js 서버가 응답하지 않습니다.');
       }
     });
   }, [queryClient]);
@@ -385,70 +137,111 @@ const AIRecommendations: React.FC = () => {
     <div style={{ 
       maxWidth: '1200px', 
       margin: '0 auto', 
-      padding: '2rem 1rem',
+      padding: '1rem 0.75rem',
       minHeight: 'calc(100vh - 80px)'
     }}>
-      {/* 페이지 헤더 */}
-      <div style={{ 
-        textAlign: 'center', 
-        marginBottom: '3rem' 
-      }}>
-        <h1 style={{ 
-          fontSize: '2.5rem', 
-          fontWeight: 'bold',
-          background: 'var(--gradient-text)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          marginBottom: '1rem'
-        }}>
-          🤖 AI 투자 추천
-        </h1>
-        <p style={{ 
-          fontSize: '1.1rem', 
-          color: 'var(--text-secondary)',
-          maxWidth: '600px',
-          margin: '0 auto'
-        }}>
-          인공지능이 분석한 최적의 투자 기회를 확인하세요
-        </p>
-      </div>
 
       {/* 타임프레임 선택 */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'center', 
         gap: '1rem',
-        marginBottom: '3rem'
+        marginBottom: '2rem',
+        maxWidth: '800px',
+        margin: '0 auto 2rem'
       }}>
         {[
-          { value: 'short', label: '단기 (1-7일)', icon: '⚡' },
-          { value: 'medium', label: '중기 (1-4주)', icon: '📈' },
-          { value: 'long', label: '장기 (1-12개월)', icon: '🌱' }
+          { 
+            value: 'short', 
+            label: '단기', 
+            sublabel: '1-7일', 
+            icon: '⚡',
+            color: '#f59e0b',
+            bgColor: 'rgba(245, 158, 11, 0.1)',
+            borderColor: 'rgba(245, 158, 11, 0.3)'
+          },
+          { 
+            value: 'medium', 
+            label: '중기', 
+            sublabel: '1-4주', 
+            icon: '📈',
+            color: '#3b82f6',
+            bgColor: 'rgba(59, 130, 246, 0.1)',
+            borderColor: 'rgba(59, 130, 246, 0.3)'
+          },
+          { 
+            value: 'long', 
+            label: '장기', 
+            sublabel: '1-12개월', 
+            icon: '🌱',
+            color: '#10b981',
+            bgColor: 'rgba(16, 185, 129, 0.1)',
+            borderColor: 'rgba(16, 185, 129, 0.3)'
+          }
         ].map((timeframe) => (
           <button
             key={timeframe.value}
             onClick={() => handleTimeframeChange(timeframe.value as any)}
             style={{
-              padding: '1rem 2rem',
-              borderRadius: '12px',
+              flex: 1,
+              padding: '1.5rem 1rem',
+              borderRadius: '16px',
               border: selectedTimeframe === timeframe.value 
-                ? '2px solid var(--accent-primary)' 
-                : '2px solid var(--border-primary)',
+                ? `2px solid ${timeframe.color}` 
+                : `2px solid ${timeframe.borderColor}`,
               background: selectedTimeframe === timeframe.value 
-                ? 'var(--accent-primary)' 
-                : 'var(--bg-card)',
+                ? `linear-gradient(135deg, ${timeframe.color}, ${timeframe.color}dd)` 
+                : timeframe.bgColor,
               color: selectedTimeframe === timeframe.value 
                 ? 'white' 
-                : 'var(--text-primary)',
+                : timeframe.color,
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              fontSize: '1rem',
-              fontWeight: '500'
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.5rem',
+              minHeight: '5rem',
+              justifyContent: 'center',
+              boxShadow: selectedTimeframe === timeframe.value 
+                ? `0 8px 32px ${timeframe.color}40` 
+                : '0 4px 16px rgba(0, 0, 0, 0.1)',
+              transform: selectedTimeframe === timeframe.value ? 'translateY(-2px)' : 'translateY(0)'
+            }}
+            onMouseEnter={(e) => {
+              if (selectedTimeframe !== timeframe.value) {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = `0 6px 24px ${timeframe.color}30`;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (selectedTimeframe !== timeframe.value) {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.1)';
+              }
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '1.2rem' }}>{timeframe.icon}</span>
-              <span>{timeframe.label}</span>
+            <div style={{ 
+              fontSize: '2rem',
+              filter: selectedTimeframe === timeframe.value ? 'brightness(1.2)' : 'none'
+            }}>
+              {timeframe.icon}
+            </div>
+            <div style={{ 
+              fontSize: '1rem',
+              fontWeight: '700',
+              letterSpacing: '0.025em'
+            }}>
+              {timeframe.label}
+            </div>
+            <div style={{ 
+              fontSize: '0.8rem',
+              opacity: 0.8,
+              fontWeight: '500'
+            }}>
+              {timeframe.sublabel}
             </div>
           </button>
         ))}
@@ -538,7 +331,7 @@ const AIRecommendations: React.FC = () => {
       )}
 
       {/* 추천 목록 */}
-      {finalData.recommendations && finalData.recommendations.length > 0 && (
+      {!finalIsLoading && finalData && finalData.recommendations && finalData.recommendations.length > 0 && (
         <>
           {/* 시장 분석 */}
           {finalData.marketAnalysis && (
@@ -568,20 +361,23 @@ const AIRecommendations: React.FC = () => {
 
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-            gap: '2rem'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '1.5rem'
           }}>
-            {finalData.recommendations.map((coin: AIRecommendation, index: number) => (
+            {finalData.recommendations.map((coin: AIRecommendation) => (
               <div
                 key={coin.symbol}
                 style={{
                   background: 'var(--bg-card)',
                   borderRadius: '16px',
-                  padding: '2rem',
+                  padding: '1.5rem',
                   border: '1px solid var(--border-primary)',
                   boxShadow: 'var(--shadow-lg)',
                   transition: 'transform 0.3s ease',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  minHeight: 'fit-content',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
@@ -640,41 +436,63 @@ const AIRecommendations: React.FC = () => {
                 {/* 예상 수익률 및 목표가 */}
                 <div style={{ 
                   display: 'flex', 
-                  justifyContent: 'space-between',
+                  flexDirection: 'column',
+                  gap: '1rem',
                   marginBottom: '1.5rem',
                   padding: '1rem',
                   background: 'var(--bg-secondary)',
-                  borderRadius: '8px'
+                  borderRadius: '12px'
                 }}>
-                  <div>
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>예상 수익률</div>
                     <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.75rem',
+                    background: 'var(--bg-card)',
+                    borderRadius: '8px'
+                  }}>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>예상 수익률</span>
+                    <span style={{ 
                       color: 'var(--status-success)', 
                       fontSize: '1.25rem', 
                       fontWeight: 'bold' 
                     }}>
                       +{coin.expectedReturn.toFixed(1)}%
-                    </div>
+                    </span>
                   </div>
-                  <div>
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>목표가</div>
                     <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.75rem',
+                    background: 'var(--bg-card)',
+                    borderRadius: '8px'
+                  }}>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>목표가</span>
+                    <span style={{ 
                       color: 'var(--text-accent)', 
                       fontSize: '1.25rem', 
                       fontWeight: 'bold' 
                     }}>
                       ${coin.targetPrice.toLocaleString()}
-                    </div>
+                    </span>
                   </div>
-                  <div>
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>손절가</div>
                     <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.75rem',
+                    background: 'var(--bg-card)',
+                    borderRadius: '8px'
+                  }}>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>손절가</span>
+                    <span style={{ 
                       color: 'var(--status-error)', 
                       fontSize: '1.25rem', 
                       fontWeight: 'bold' 
                     }}>
                       ${coin.stopLoss.toLocaleString()}
-                    </div>
+                    </span>
                   </div>
                 </div>
 
@@ -726,39 +544,60 @@ const AIRecommendations: React.FC = () => {
                 )}
 
                 {/* 추천 근거 */}
-                <div>
+                <div style={{ 
+                  marginTop: 'auto',
+                  paddingTop: '1.5rem',
+                  borderTop: '1px solid var(--border-secondary)'
+                }}>
                   <h4 style={{ 
                     fontSize: '1.1rem', 
                     fontWeight: '600',
-                    marginBottom: '1rem'
+                    marginBottom: '1rem',
+                    color: 'var(--text-primary)'
                   }}>
                     추천 근거
                   </h4>
                   <ul style={{ 
                     listStyle: 'none', 
                     padding: 0,
-                    margin: 0
+                    margin: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem'
                   }}>
                     {coin.reasons.map((reason, reasonIndex) => (
                       <li key={reasonIndex} style={{
                         display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        marginBottom: '0.75rem',
-                        color: 'var(--text-secondary)'
+                        alignItems: 'flex-start',
+                        gap: '0.75rem',
+                        padding: '0.75rem',
+                        background: 'var(--bg-secondary)',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border-secondary)'
                       }}>
                         <span style={{ 
                           color: 'var(--accent-primary)',
-                          fontSize: '0.875rem'
+                          fontSize: '1rem',
+                          fontWeight: 'bold',
+                          marginTop: '0.125rem',
+                          flexShrink: 0
                         }}>
                           ✓
                         </span>
-                        <div>
-                          <div style={{ fontWeight: '500' }}>{reason.description}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ 
+                            fontWeight: '500',
+                            color: 'var(--text-primary)',
+                            lineHeight: '1.4',
+                            marginBottom: '0.25rem',
+                            fontSize: '0.9rem'
+                          }}>
+                            {reason.description}
+                          </div>
                           <div style={{ 
                             fontSize: '0.75rem', 
                             color: 'var(--text-tertiary)',
-                            marginTop: '0.25rem'
+                            fontWeight: '500'
                           }}>
                             신뢰도: {reason.confidence}%
                           </div>
@@ -774,7 +613,7 @@ const AIRecommendations: React.FC = () => {
       )}
 
       {/* 데이터가 없는 경우 */}
-      {finalData && (!finalData.recommendations || finalData.recommendations.length === 0) && (
+      {!finalIsLoading && !finalError && finalData && (!finalData.recommendations || finalData.recommendations.length === 0) && (
         <div style={{
           textAlign: 'center',
           marginTop: '3rem',

@@ -17,31 +17,6 @@ const Charts: React.FC = () => {
       minHeight: '100vh',
       background: 'var(--bg-primary)'
     }}>
-      {/* 페이지 헤더 */}
-      <div style={{
-        marginBottom: '2rem',
-        textAlign: 'center'
-      }}>
-        <h1 style={{
-          fontSize: '2.5rem',
-          fontWeight: 'bold',
-          background: 'var(--gradient-text)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          marginBottom: '0.5rem'
-        }}>
-          📈 고급 차트
-        </h1>
-        <p style={{
-          fontSize: '1.125rem',
-          color: 'var(--text-secondary)',
-          maxWidth: '600px',
-          margin: '0 auto'
-        }}>
-          실시간 암호화폐 차트와 기술적 지표를 확인하세요
-        </p>
-      </div>
 
       {/* 차트 컨트롤 */}
       <ChartControls

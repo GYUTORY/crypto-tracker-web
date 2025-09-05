@@ -35,23 +35,31 @@ const getRefetchInterval = (baseInterval: number) => {
  * @param response - API 응답
  * @returns 추출된 데이터 또는 null
  */
-const extractData = <T>(response: ApiResponseWrapper<T>): T | null => {
+const extractData = <T>(response: any): T | null => {
   console.log('🔍 extractData 호출:', {
     response,
     hasResult: !!response.result,
     hasResultData: !!response.result_data,
     resultType: typeof response.result,
-    resultDataType: typeof response.result_data
+    resultDataType: typeof response.result_data,
+    isDirectData: !response.result && !response.result_data
   });
   
-  if (response.result) {
-    console.log('✅ 데이터 추출 성공:', response.result_data);
+  // ApiResponseWrapper 형태인 경우 (result, result_data 필드 포함)
+  if (response.result && response.result_data !== undefined) {
+    console.log('✅ ApiResponseWrapper 형태 데이터 추출 성공:', response.result_data);
     return response.result_data;
   }
   
+  // 직접 데이터 형태인 경우 (API가 직접 데이터를 반환)
+  if (!response.result && !response.result_data && response !== null) {
+    console.log('✅ 직접 데이터 형태 추출 성공:', response);
+    return response;
+  }
+  
   console.error('❌ API Error:', {
-    message: response.msg,
-    code: response.code,
+    message: response.msg || 'Unknown error',
+    code: response.code || 'UNKNOWN',
     fullResponse: response
   });
   return null;
@@ -436,9 +444,9 @@ export const useShortTermRecommendations = (enabled: boolean = true) => {
     queryKey: ['short-term-recommendations'],
     queryFn: async (): Promise<AIRecommendations> => {
       console.log('🤖 단기 추천 API 호출');
-      const response = await aiRecommendationsApi.getShortTermRecommendations() as unknown as ApiResponseWrapper<AIRecommendations>;
+      const response = await aiRecommendationsApi.getShortTermRecommendations();
       console.log('🤖 단기 추천 API 응답:', response);
-      const data = extractData(response);
+      const data = extractData<AIRecommendations>(response);
       console.log('🤖 추출된 단기 추천 데이터:', data);
       if (!data) {
         throw new Error('Failed to fetch short-term recommendations');
@@ -473,10 +481,10 @@ export const useMediumTermRecommendations = (enabled: boolean = true) => {
     queryFn: async (): Promise<AIRecommendations> => {
       console.log('🤖 중기 추천 API 호출 시작');
       try {
-        const response = await aiRecommendationsApi.getMediumTermRecommendations() as unknown as ApiResponseWrapper<AIRecommendations>;
+        const response = await aiRecommendationsApi.getMediumTermRecommendations();
         console.log('🤖 중기 추천 API 응답:', response);
         
-        const data = extractData(response);
+        const data = extractData<AIRecommendations>(response);
         console.log('🤖 추출된 중기 추천 데이터:', data);
         
         if (!data) {
@@ -518,9 +526,9 @@ export const useLongTermRecommendations = (enabled: boolean = true) => {
     queryKey: ['long-term-recommendations'],
     queryFn: async (): Promise<AIRecommendations> => {
       console.log('🤖 장기 추천 API 호출');
-      const response = await aiRecommendationsApi.getLongTermRecommendations() as unknown as ApiResponseWrapper<AIRecommendations>;
+      const response = await aiRecommendationsApi.getLongTermRecommendations();
       console.log('🤖 장기 추천 API 응답:', response);
-      const data = extractData(response);
+      const data = extractData<AIRecommendations>(response);
       console.log('🤖 추출된 장기 추천 데이터:', data);
       if (!data) {
         throw new Error('Failed to fetch long-term recommendations');
@@ -554,9 +562,9 @@ export const useAllRecommendations = () => {
     queryKey: ['all-recommendations'],
     queryFn: async (): Promise<AllRecommendations> => {
       console.log('🤖 전체 추천 API 호출');
-      const response = await aiRecommendationsApi.getAllRecommendations() as unknown as ApiResponseWrapper<AllRecommendations>;
+      const response = await aiRecommendationsApi.getAllRecommendations();
       console.log('🤖 전체 추천 API 응답:', response);
-      const data = extractData(response);
+      const data = extractData<AllRecommendations>(response);
       console.log('🤖 추출된 전체 추천 데이터:', data);
       if (!data) {
         throw new Error('Failed to fetch all recommendations');
